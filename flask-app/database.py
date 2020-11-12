@@ -6,7 +6,7 @@ from counties import load_counties_from_csv
 from models import Base
 
 engine = create_engine(settings.DB_CONNECTION_URI)
-session = sessionmaker(bind=engine)()
+Session = sessionmaker(bind=engine)
 
 
 def recreate_schema():
