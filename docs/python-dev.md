@@ -3,7 +3,7 @@
 ## Requirements:
 1. Python 3.9.0 - download and install from [python.org](https://www.python.org/downloads/) or use your system's package manager
 
-2. pipenv - a Python package installed using Python's package manager, pip
+2. [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) - a Python package installed using Python's package manager, pip
 
     to install, execute this in shell:
 
