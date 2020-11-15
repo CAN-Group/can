@@ -12,6 +12,8 @@ Session = sessionmaker(bind=engine)
 def recreate_schema():
     Base.metadata.create_all(bind=engine, checkfirst=True)
 
+    session = Session()
+
     counties = load_counties_from_csv()
     for county in counties:
         session.merge(county)
