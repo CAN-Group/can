@@ -56,9 +56,9 @@
 1. Execute command:
 
     ```sh
-    docker run --rm -it --name brouter -v <path>:/app/segments -p 17777:17777 can/brouter:<tag>
+    docker run --rm -it --name brouter -v <path>:/app/segments4 -p 17777:17777 can/brouter:<tag>
     ```
 
-    path should be an **absolute** path to a directory with downloaded segments on the host filesystem. `/app/segments` is where it will be mounted in the container
+    path should be an **absolute** path to a directory with downloaded segments on the host filesystem. `/app/segments4` is where it will be mounted in the container
 
     Use flag `--detached` to run container in the background
