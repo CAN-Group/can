@@ -26,7 +26,7 @@
 1. Java Runtime Environment 7 or newer (tested on OpenJDK RE 1.7.0_211 and 15.0.1)
 
 - Steps:
-1. Create directory for map segments at path: `./can/brouter/misc/segments4` and populate it with proper .rd5 files (consult `./docs/Segments.md`)
+1. Create directory for map segments at path: `./can/brouter/misc/segments4` and populate it with proper .rd5 files (consult `./docs/segments.md`)
 2. Set current directory to `./can/brouter/misc/scripts/standalone`
 3. Execute `server.cmd` or `server.sh`
 
