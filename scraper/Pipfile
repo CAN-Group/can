@@ -11,9 +11,11 @@ pytest = "*"
 
 [packages]
 sqlalchemy = "*"
-gspread = "*"
 apscheduler = "*"
 python-dotenv = "*"
+requests = "*"
+numpy = "==1.19.3"
+pandas = "*"
 
 [requires]
 python_version = "3.9"
