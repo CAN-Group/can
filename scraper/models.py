@@ -1,7 +1,6 @@
-from datetime import datetime
-
-from sqlalchemy import Column, DateTime, Float, Integer, String
+from sqlalchemy import Column, Date, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import DetachedInstanceError
 
 
@@ -23,30 +22,66 @@ class BaseMixin(object):
 Base = declarative_base(cls=BaseMixin)
 
 
+class Voivodeship(Base):
+    """Database model for voivodeships (województwas)
+    - id_ = voivodeship ID compliant with TERYT (column "id" in database, primary key)
+    - name = voivodeship name
+    """
+
+    __tablename__ = "voivodeships"
+
+    id_ = Column("id", String(3), primary_key=True)
+    name = Column(String(64), nullable=False)
+
+    counties = relationship("County", uselist=True, back_populates="voivodeship")
+
+    @classmethod
+    def get_voivodeship_id_from_county_id(_, county_id: str):
+        return county_id[:3]
+
+    @classmethod
+    def from_csv(cls, id_: str, voivodeship: str):
+        id_ = cls.get_voivodeship_id_from_county_id(id_)
+        return cls(id_=id_, name=voivodeship)
+
+
 class County(Base):
-    """Database model for counties (powiats)
-    - id_ = county ID compliant with TERYT
+    """Database model for counties (powiaty)
+    - id_ = county ID compliant with TERYT (column "id" in database, primary key)
+    - voivodeship_id = county's voivodeship ID (foreign key)
     - name = county name
     - population = number of citizens
-    - number_of_cases = number of COVID-19 cases at last update
-    - percent_of_pop = number_of_cases / population * 100
-    - update_datetime = datetime of last update
     """
 
     __tablename__ = "counties"
 
-    id_ = Column(String, primary_key=True)
-    name = Column(String, nullable=False)
+    id_ = Column("id", String(5), primary_key=True)  # 'id_' in ORM, 'id' in DB
+    voivodeship_id = Column(String(3), ForeignKey("voivodeships.id"), nullable=False)
+    name = Column(String(64), nullable=False)
     population = Column(Integer, nullable=True)
-    number_of_cases = Column(Integer, nullable=True)
-    percent_of_pop = Column(Float, nullable=True)
-    update_datetime = Column(DateTime, nullable=True)
 
-    def update_number_of_cases(self, cases: int, updated: datetime = None):
-        assert cases > 0
+    voivodeship = relationship("Voivodeship", uselist=False, back_populates="counties")
+    cases = relationship("CasesRecord", uselist=True, back_populates="county")
 
-        self.number_of_cases = cases
-        self.percent_of_pop = cases / self.population * 100
-        self.update_datetime = updated or datetime.utcnow()
+    @classmethod
+    def from_csv(cls, id_: str, county: str, population: int):
+        voivodeship_id = Voivodeship.get_voivodeship_id_from_county_id(id_)
+        return cls(
+            id_=id_, voivodeship_id=voivodeship_id, name=county, population=population
+        )
 
-        return True
+
+class CasesRecord(Base):
+    """Database model for covid cases records for a county on a single day
+    - county_id = county ID (primary key, foreign key)
+    - updated = date of cases record (primary key)
+    - number_of_cases = number of cases registered that day
+    """
+
+    __tablename__ = "cases_records"
+
+    county_id = Column(String(5), ForeignKey("counties.id"), primary_key=True)
+    updated = Column(Date, primary_key=True)
+    number_of_cases = Column(Integer, nullable=False)
+
+    county = relationship("County", uselist=False, back_populates="cases")
