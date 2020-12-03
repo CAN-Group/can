@@ -1,10 +1,11 @@
 from apscheduler.triggers.cron import CronTrigger
 
-from database import session
+from database import Session
 
 
 def scrape():
     # TODO scrape
+    session = Session()
     print("scraping...")
 
 

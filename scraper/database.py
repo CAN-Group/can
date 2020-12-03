@@ -6,11 +6,13 @@ from models import Base
 from static_data_api import get_counties, get_voivodeships, load_counties_csv
 
 engine = create_engine(settings.DB_CONNECTION_URI)
-session = sessionmaker(bind=engine)()
+Session = sessionmaker(bind=engine)
 
 
 def recreate_schema():
     Base.metadata.create_all(bind=engine, checkfirst=True)
+
+    session = Session()
 
     df = load_counties_csv()
 
