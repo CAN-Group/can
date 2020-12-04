@@ -2,17 +2,25 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import settings
-from counties import load_counties_from_csv
 from models import Base
+from static_data_api import get_counties, get_voivodeships, load_counties_csv
 
 engine = create_engine(settings.DB_CONNECTION_URI)
-session = sessionmaker(bind=engine)()
+Session = sessionmaker(bind=engine)
 
 
 def recreate_schema():
     Base.metadata.create_all(bind=engine, checkfirst=True)
 
-    counties = load_counties_from_csv()
+    session = Session()
+
+    df = load_counties_csv()
+
+    voivodeships = get_voivodeships(df)
+    for voivodeship in voivodeships:
+        session.merge(voivodeship)
+
+    counties = get_counties(df)
     for county in counties:
         session.merge(county)
 

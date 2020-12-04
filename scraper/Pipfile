@@ -5,17 +5,18 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
-isort = "*"
 flake8 = "*"
+isort = "*"
 pytest = "*"
 
 [packages]
-sqlalchemy = "*"
 apscheduler = "*"
-python-dotenv = "*"
-requests = "*"
 numpy = "==1.19.3"
 pandas = "*"
+psycopg2-binary = "*"
+python-dotenv = "*"
+requests = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.9"
