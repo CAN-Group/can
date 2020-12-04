@@ -27,7 +27,7 @@
 
 - Steps:
 1. Create directory for map segments at path: `./can/brouter/misc/segments4` and populate it with
-proper .rd5 files (consult `./docs/segments.md`)
+proper .rd5 files. Consult [segments.md](segments.md) for more information
 2. Set current directory to `./can/brouter/misc/scripts/standalone`
 3. Execute `server.cmd` or `server.sh`
 
