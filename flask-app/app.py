@@ -1,6 +1,7 @@
 import os
 
-from flask import Flask
+import requests
+from flask import Flask, Response
 from flask_cors import CORS
 
 import settings
@@ -24,6 +25,25 @@ def sitemap():
     for static_file_path in static_files:
         endpoints[f"/static/{static_file_path}"] = static_file_path
     return endpoints
+
+
+@app.route("/api/v1/route/<string:parameters>")
+def proxy_request_to_brouter(parameters):
+    url = settings.ROUTING_APP_URL
+    url = f"{url}?{parameters}"
+    response = requests.get(url)
+    excluded_headers = [
+        "content-encoding",
+        "content-length",
+        "transfer-encoding",
+        "connection",
+    ]
+    headers = [
+        (key, value)
+        for (key, value) in response.headers.items()
+        if key.lower() not in excluded_headers
+    ]
+    return Response(response.content, response.status_code, headers)
 
 
 @app.route("/api/v1/counties")
