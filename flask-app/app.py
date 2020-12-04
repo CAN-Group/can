@@ -10,6 +10,7 @@ from models import County
 
 app = Flask(__name__, static_folder="./static")
 app.config["JSON_AS_ASCII"] = False
+app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 
 CORS(app, origin={settings.FRONTEND_APP_URL})
 
