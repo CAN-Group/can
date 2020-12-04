@@ -12,6 +12,8 @@ pytest = "*"
 [packages]
 flask = "*"
 flask-cors = "*"
+numpy = "==1.19.3"
+pandas = "*"
 python-dotenv = "*"
 requests = "*"
 sqlalchemy = "*"
