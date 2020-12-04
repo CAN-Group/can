@@ -36,12 +36,12 @@ class Voivodeship(Base):
     counties = relationship("County", uselist=True, back_populates="voivodeship")
 
     @staticmethod
-    def get_voivodeship_id_from_county_id(_, county_id: str):
+    def get_id_from_county_id(county_id: str):
         return county_id[:3]
 
     @classmethod
     def from_csv(cls, id_: str, voivodeship: str):
-        id_ = cls.get_voivodeship_id_from_county_id(id_)
+        id_ = cls.get_id_from_county_id(id_)
         return cls(id_=id_, name=voivodeship)
 
 
@@ -65,7 +65,7 @@ class County(Base):
 
     @classmethod
     def from_csv(cls, id_: str, county: str, population: int):
-        voivodeship_id = Voivodeship.get_voivodeship_id_from_county_id(id_)
+        voivodeship_id = Voivodeship.get_id_from_county_id(id_)
         return cls(
             id_=id_, voivodeship_id=voivodeship_id, name=county, population=population
         )
