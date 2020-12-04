@@ -35,7 +35,7 @@ class Voivodeship(Base):
 
     counties = relationship("County", uselist=True, back_populates="voivodeship")
 
-    @classmethod
+    @staticmethod
     def get_voivodeship_id_from_county_id(_, county_id: str):
         return county_id[:3]
 
