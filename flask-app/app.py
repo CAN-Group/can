@@ -5,7 +5,7 @@ from flask import Flask, Response
 from flask_cors import CORS
 
 import settings
-from database import Session
+from database import DBSession
 from models import County
 
 app = Flask(__name__, static_folder="./static")
@@ -49,14 +49,14 @@ def proxy_request_to_brouter(parameters):
 
 @app.route("/api/v1/counties")
 def get_all_counties():
-    session = Session()
-    return {"counties": [county.to_dict() for county in session.query(County).all()]}
+    db_session = DBSession()
+    return {"counties": [county.to_dict() for county in db_session.query(County).all()]}
 
 
 @app.route("/api/v1/counties/<string:county_id>")
 def get_county(county_id):
-    session = Session()
-    county = session.query(County).filter_by(id_=county_id).first()
+    db_session = DBSession()
+    county = db_session.query(County).filter_by(id_=county_id).first()
     if not county:
         return "county with given id not found", 400
     return county.to_dict()
