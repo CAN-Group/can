@@ -6,23 +6,23 @@ from models import Base
 from static_data_api import get_counties, get_voivodeships, load_counties_csv
 
 engine = create_engine(settings.DB_CONNECTION_URI)
-Session = sessionmaker(bind=engine)
+DBSession = sessionmaker(bind=engine)
 
 
 def recreate_schema():
     Base.metadata.create_all(bind=engine, checkfirst=True)
 
-    session = Session()
+    db_session = DBSession()
 
     df = load_counties_csv()
 
     voivodeships = get_voivodeships(df)
     for voivodeship in voivodeships:
-        session.merge(voivodeship)
+        db_session.merge(voivodeship)
 
     counties = get_counties(df)
     for county in counties:
-        session.merge(county)
+        db_session.merge(county)
 
-    session.commit()
+    db_session.commit()
     return True
