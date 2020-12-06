@@ -5,8 +5,18 @@ from database import DBSession
 
 def scrape():
     # TODO scrape
-    db_session = DBSession()
-    print("scraping...")
+    pass
+    # example of adding to db:
+    # db_session = DBSession()
+    # cases = ...
+    # for case in cases:
+    #     cases_record = CasesRecord(
+    #         county_id=case.x,
+    #         updated=case.y,
+    #         number_of_cases=case.z
+    #     )
+    #     session.merge(cases_record)
+    # session.commit()
 
 
 trigger = CronTrigger(hour="00,12", minutes="0")
