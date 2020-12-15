@@ -5,8 +5,8 @@ import pandas as pd
 
 from models import County, Voivodeship
 
-COUNTIES_CSV_FILEPATH = "static_data/counties.csv"
-COUNTIES_GEOJSON_FILEPATH = "static_data/counties.geojson"
+COUNTIES_CSV_FILEPATH = "static/counties.csv"
+COUNTIES_GEOJSON_FILEPATH = "static/counties.geojson"
 
 
 def load_counties_csv():
