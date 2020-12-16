@@ -119,8 +119,8 @@ def get_newest_updated():
 
 @app.route("/api/v1/cases/")
 def get_cases():
-    updated = get_newest_updated()
-    return get_cases_from(updated.strftime("%d-%m-%Y"))
+    newest_date = get_newest_updated()
+    return get_cases_from(newest_date.strftime("%d-%m-%Y"))
 
 
 @app.route("/api/v1/cases/<string:date_str>")
@@ -135,8 +135,8 @@ def get_cases_from(date_str):
 
 @app.route("/api/v1/cases/for/<string:county_id>")
 def get_cases_for(county_id):
-    updated = get_newest_updated()
-    return get_cases_from_for(updated.strfdate("%d-%m-%Y"), county_id)
+    newest_date = get_newest_updated()
+    return get_cases_from_for(newest_date.strfdate("%d-%m-%Y"), county_id)
 
 
 @app.route("/api/v1/cases/<string:date_str>/for/<string:county_id>")
