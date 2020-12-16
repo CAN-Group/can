@@ -128,7 +128,7 @@ def get_cases_from(date_str):
     records = db_session.query(CasesRecord).filter_by(updated=dt).all()
     if not records:
         raise NoResultFound
-    return {"cases": [record.county.to_dict() for record in records]}
+    return {"cases": [record.to_dict() for record in records]}
 
 
 @app.route("/api/v1/cases/for/<string:county_id>")
@@ -145,7 +145,7 @@ def get_cases_from_for(date_str, county_id):
     if not record:
         raise NoResultFound
     
-    return record.county.to_dict()
+    return record.to_dict()
 
 
 if __name__ == "__main__":
