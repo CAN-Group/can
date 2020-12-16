@@ -90,7 +90,8 @@ class WrongDateError(Exception):
 
 @app.errorhandler(WrongDateError)
 def handle_wrong_date(e):
-    return "Wrong date provided", 400
+    return "Wrong date provided. Please use"
+           "the proper format: 'DD-MM-YYYY'", 400
 
 
 @app.errorhandler(NoResultFound)
@@ -122,11 +123,11 @@ def get_cases():
     return get_cases_from(updated.strftime("%d-%m-%Y"))
 
 
-@app.route("/api/v1/cases/<string:date>")
-def get_cases_from(date):
+@app.route("/api/v1/cases/<string:date_str>")
+def get_cases_from(date_str):
     db_session = DBSession()
-    dt = str_to_date(date)
-    records = db_session.query(CasesRecord).filter_by(updated=dt.date()).all()
+    dt = str_to_date(date_str)
+    records = db_session.query(CasesRecord).filter_by(updated=dt).all()
     if not records:
         raise NoResultFound
     return {"cases": [record.county.to_dict() for record in records]}
@@ -138,10 +139,10 @@ def get_cases_for(county_id):
     return get_cases_from_for(updated.strfdate("%d-%m-%Y"), county_id)
 
 
-@app.route("/api/v1/cases/<string:date>/for/<string:county_id>")
-def get_cases_from_for(date, county_id):
+@app.route("/api/v1/cases/<string:date_str>/for/<string:county_id>")
+def get_cases_from_for(date_str, county_id):
     db_session = DBSession()
-    dt = str_to_date(date)
+    dt = str_to_date(date_str)
     record = db_session.query(CasesRecord).filter_by(updated=dt, county_id=county_id).first()
     if not record:
         raise NoResultFound
