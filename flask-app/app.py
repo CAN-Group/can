@@ -1,15 +1,14 @@
+import datetime
 import os
 
-import datetime
 import requests
 from flask import Flask, Response
 from flask_cors import CORS
+from sqlalchemy.orm.exc import NoResultFound
 
 import settings
 from database import DBSession
-from models import County, Voivodeship, CasesRecord
-
-from sqlalchemy.orm.exc import NoResultFound
+from models import CasesRecord, County, Voivodeship
 
 app = Flask(__name__, static_folder="./static")
 app.config["JSON_AS_ASCII"] = False
@@ -130,6 +129,7 @@ def get_cases_for(county_id):
 
     if not record:
         raise NoResultFound
+
     return record.to_dict()
 
 
@@ -149,6 +149,7 @@ def get_cases_from_for(date_str, county_id):
 
     if not record:
         raise NoResultFound
+
     return record.to_dict()
 
 
