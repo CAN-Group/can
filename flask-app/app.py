@@ -90,8 +90,7 @@ class WrongDateError(Exception):
 
 @app.errorhandler(WrongDateError)
 def handle_wrong_date(e):
-    return "Wrong date provided. Please use"
-           "the proper format: 'DD-MM-YYYY'", 400
+    return "Wrong date provided. Please use the proper format: 'DD-MM-YYYY'", 400
 
 
 @app.errorhandler(NoResultFound)
