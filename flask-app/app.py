@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 import settings
 from database import DBSession
-from models import County
+from models import County, Voivodeship
 
 app = Flask(__name__, static_folder="./static")
 app.config["JSON_AS_ASCII"] = False
@@ -47,19 +47,37 @@ def proxy_request_to_brouter(parameters):
     return Response(response.content, response.status_code, headers)
 
 
+def get_regions(model):
+    endpoint = {County: "counties", Voivodeship: "voivodeships"}[model]
+    db_session = DBSession()
+    return {endpoint: [x.to_dict() for x in db_session.query(model).all()]}
+
+
+def get_region(model, region_id):
+    db_session = DBSession()
+    region = db_session.query(model).filter_by(id_=region_id).first()
+    if not region:
+        return f"{model.__name__} with given id not found", 400
+    return region.to_dict()
+
+@app.route("/api/v1/voivodeships")
+def get_all_voivodeships():
+    return get_regions(Voivodeship)
+
+
 @app.route("/api/v1/counties")
 def get_all_counties():
-    db_session = DBSession()
-    return {"counties": [county.to_dict() for county in db_session.query(County).all()]}
+    return get_regions(County)
+
+
+@app.route("/api/v1/voivodeships/<string:voivodeship_id>")
+def get_voivodeship(voivodeship_id):
+    return get_region(Voivodeship, voivodeship_id)
 
 
 @app.route("/api/v1/counties/<string:county_id>")
 def get_county(county_id):
-    db_session = DBSession()
-    county = db_session.query(County).filter_by(id_=county_id).first()
-    if not county:
-        return "county with given id not found", 400
-    return county.to_dict()
+    return get_region(County, county_id)
 
 
 if __name__ == "__main__":
