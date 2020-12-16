@@ -18,6 +18,11 @@ app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 CORS(app, origin={settings.FRONTEND_APP_URL})
 
 
+@app.errorhandler(NoResultFound)
+def handle_no_data(e):
+    return "No data available", 400
+
+
 @app.route("/")
 def sitemap():
     endpoints = {
@@ -83,68 +88,67 @@ def get_county(county_id):
     return get_region(County, county_id)
 
 
-class WrongDateError(Exception):
-    pass
-
-
-@app.errorhandler(WrongDateError)
-def handle_wrong_date(e):
-    return "Wrong date provided. Please use the proper format: 'DD-MM-YYYY'", 400
-
-
-@app.errorhandler(NoResultFound)
-def handle_no_data(e):
-    return "No data available", 400
-
-
-def str_to_date(date_str):
-    try:
-        dt = datetime.datetime.strptime(date_str, "%d-%m-%Y").date()
-    except ValueError:
-        raise WrongDateError
-
-    return dt
-
-
-def get_newest_updated():
+def get_county_ids_from_cases():
     db_session = DBSession()
-    record = db_session.query(CasesRecord).order_by(CasesRecord.updated.desc()).first()
-    try:
-        return record.updated
-    except AttributeError:
-        raise NoResultFound()
+    columns = db_session.query(CasesRecord.county_id).distinct()
+    return [county_id for county_id in columns]
 
 
 @app.route("/api/v1/cases/")
 def get_cases():
-    newest_date = get_newest_updated()
-    return get_cases_from(newest_date.strftime("%d-%m-%Y"))
+    '''Get most recent cases for each county.'''
+    ids = get_county_ids_from_cases()
+    return {"cases": [get_cases_for(id) for id in ids]}
 
 
 @app.route("/api/v1/cases/<string:date_str>")
 def get_cases_from(date_str):
-    db_session = DBSession()
-    dt = str_to_date(date_str)
-    records = db_session.query(CasesRecord).filter_by(updated=dt).all()
-    if not records:
+    '''Get most recent cases up till given date for each county.'''
+    ids = get_county_ids_from_cases()
+
+    records_dicts = []
+    for id in ids:
+        try:
+            cases = get_cases_from_for(date_str, id)
+        except NoResultFound:
+            continue
+        records_dicts.append(cases)
+
+    if not records_dicts:
         raise NoResultFound
-    return {"cases": [record.to_dict() for record in records]}
+
+    return {"cases": records_dicts}
 
 
 @app.route("/api/v1/cases/for/<string:county_id>")
 def get_cases_for(county_id):
-    newest_date = get_newest_updated()
-    return get_cases_from_for(newest_date.strfdate("%d-%m-%Y"), county_id)
+    '''Get most recent cases entry for county of given id.'''
+    db_session = DBSession()
+    record = db_session.query(CasesRecord) \
+        .filter_by(county_id=county_id) \
+        .order_by(CasesRecord.updated.desc()).first()
+
+    if not record:
+        raise NoResultFound
+    return record.to_dict()
 
 
 @app.route("/api/v1/cases/<string:date_str>/for/<string:county_id>")
 def get_cases_from_for(date_str, county_id):
+    '''Get most recent cases entry up till given date for county of given id.'''
     db_session = DBSession()
-    dt = str_to_date(date_str)
-    record = db_session.query(CasesRecord).filter_by(updated=dt, county_id=county_id).first()
+    try:
+        dt = datetime.datetime.strptime(date_str, r"%Y-%m-%d").date()
+    except ValueError:
+        return "Wrong date provided. Please use the proper format: 'DD-MM-YYYY'", 400
+
+    record = db_session.query(CasesRecord) \
+        .filter_by(county_id=county_id) \
+        .order_by(CasesRecord.updated.desc()) \
+        .filter(CasesRecord.updated <= dt).first()
+
     if not record:
         raise NoResultFound
-    
     return record.to_dict()
 
 
