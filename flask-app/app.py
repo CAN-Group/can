@@ -51,9 +51,8 @@ def proxy_request_to_brouter(parameters):
 
 
 def get_regions(model):
-    endpoint = {County: "counties", Voivodeship: "voivodeships"}[model]
     db_session = DBSession()
-    return {endpoint: [x.to_dict() for x in db_session.query(model).all()]}
+    return {model.__tablename__: [x.to_dict() for x in db_session.query(model).all()]}
 
 
 def get_region(model, region_id):
