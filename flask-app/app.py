@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 import os
 
 import requests
@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 import settings
 from database import DBSession
-from models import CasesRecord, County, Voivodeship
+from models import County, Voivodeship
 
 app = Flask(__name__, static_folder="./static")
 app.config["JSON_AS_ASCII"] = False
@@ -17,9 +17,18 @@ app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 CORS(app, origin={settings.FRONTEND_APP_URL})
 
 
+class WrongDateError(Exception):
+    '''Raised when date conversion fails'''
+
+
 @app.errorhandler(NoResultFound)
 def handle_no_data(e):
     return "No data available", 400
+
+
+@app.errorhandler(WrongDateError)
+def handle_wrong_date(e):
+    return "Wrong date provided. Please use the proper format: 'YYYY-MM-DD'", 400
 
 
 @app.route("/")
@@ -61,9 +70,7 @@ def get_regions(model):
 
 def get_region(model, region_id):
     db_session = DBSession()
-    region = db_session.query(model).filter_by(id_=region_id).first()
-    if not region:
-        return f"{model.__name__} with given id not found", 400
+    region = db_session.query(model).filter_by(id_=region_id).one()
     return region.to_dict()
 
 
@@ -87,70 +94,76 @@ def get_county(county_id):
     return get_region(County, county_id)
 
 
-def get_county_ids_from_cases():
-    db_session = DBSession()
-    columns = db_session.query(CasesRecord.county_id).distinct()
-    return [county_id for county_id in columns]
+def str_to_date(date_str):
+    try:
+        dt = date.fromisoformat(date_str)
+    except ValueError:
+        raise WrongDateError
+
+    return dt
+
+
+def get_most_recent_cases(cases_list):
+    if not cases_list:
+        raise NoResultFound
+    return max(cases_list, key=lambda x: x.updated)
+
+
+def extract_cases_from(date, cases_list):
+    cases = next(filter(lambda c: c.updated == date, cases_list), None)
+    if cases is None:
+        raise NoResultFound
+    return cases
 
 
 @app.route("/api/v1/cases/")
 def get_cases():
     '''Get most recent cases for each county.'''
-    ids = get_county_ids_from_cases()
-    return {"cases": [get_cases_for(county_id) for county_id in ids]}
+    db_session = DBSession()
+    cases = []
+    for county in db_session.query(County):
+        try:
+            cases.append(get_most_recent_cases(county.cases).to_dict())
+        except NoResultFound:
+            pass
+
+    return {"cases": cases}
 
 
 @app.route("/api/v1/cases/<string:date_str>")
 def get_cases_from(date_str):
-    '''Get most recent cases up till given date for each county.'''
-    ids = get_county_ids_from_cases()
-
-    records_dicts = []
-    for county_id in ids:
+    '''Get cases from given date for each county.'''
+    date = str_to_date(date_str)
+    db_session = DBSession()
+    records = []
+    for county in db_session.query(County):
         try:
-            cases = get_cases_from_for(date_str, county_id)
+            records.append(extract_cases_from(date, county.cases))
         except NoResultFound:
-            continue
-        records_dicts.append(cases)
+            pass
 
-    if not records_dicts:
+    if not records:
         raise NoResultFound
 
-    return {"cases": records_dicts}
+    return {"cases": [record.to_dict() for record in records]}
 
 
 @app.route("/api/v1/cases/for/<string:county_id>")
 def get_cases_for(county_id):
     '''Get most recent cases entry for county of given id.'''
     db_session = DBSession()
-    record = db_session.query(CasesRecord) \
-        .filter_by(county_id=county_id) \
-        .order_by(CasesRecord.updated.desc()).first()
-
-    if not record:
-        raise NoResultFound
-
-    return record.to_dict()
+    record = db_session.query(County).filter_by(id_=county_id).one()
+    return get_most_recent_cases(record.cases).to_dict()
 
 
 @app.route("/api/v1/cases/<string:date_str>/for/<string:county_id>")
 def get_cases_from_for(date_str, county_id):
-    '''Get most recent cases entry up till given date for county of given id.'''
+    '''Get cases from given date for county of given id.'''
+    date = str_to_date(date_str)
     db_session = DBSession()
-    try:
-        dt = datetime.datetime.strptime(date_str, r"%Y-%m-%d").date()
-    except ValueError:
-        return "Wrong date provided. Please use the proper format: 'DD-MM-YYYY'", 400
+    record = db_session.query(County).filter_by(id_=county_id).one()
 
-    record = db_session.query(CasesRecord) \
-        .filter_by(county_id=county_id) \
-        .order_by(CasesRecord.updated.desc()) \
-        .filter(CasesRecord.updated <= dt).first()
-
-    if not record:
-        raise NoResultFound
-
-    return record.to_dict()
+    return extract_cases_from(date, record.cases).to_dict()
 
 
 if __name__ == "__main__":
