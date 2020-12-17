@@ -97,7 +97,7 @@ def get_county_ids_from_cases():
 def get_cases():
     '''Get most recent cases for each county.'''
     ids = get_county_ids_from_cases()
-    return {"cases": [get_cases_for(id) for id in ids]}
+    return {"cases": [get_cases_for(county_id) for county_id in ids]}
 
 
 @app.route("/api/v1/cases/<string:date_str>")
@@ -106,9 +106,9 @@ def get_cases_from(date_str):
     ids = get_county_ids_from_cases()
 
     records_dicts = []
-    for id in ids:
+    for county_id in ids:
         try:
-            cases = get_cases_from_for(date_str, id)
+            cases = get_cases_from_for(date_str, county_id)
         except NoResultFound:
             continue
         records_dicts.append(cases)
