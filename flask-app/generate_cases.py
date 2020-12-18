@@ -13,9 +13,8 @@ def generate_for_day(counties, dt, percent):
         cases = next(filter(lambda c: c.updated == dt, county.cases), None)
         if cases:
             cases.number_of_cases = cases_no
-            continue
-
-        cs = CasesRecord(county=county, updated=dt, number_of_cases=cases_no)
+        else:
+            CasesRecord(county=county, updated=dt, number_of_cases=cases_no)
 
 
 def generate_for_days(day_count: int):
