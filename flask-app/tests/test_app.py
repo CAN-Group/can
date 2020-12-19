@@ -1,16 +1,12 @@
-import os
 import pytest
 
 from app import app
-from database import recreate_schema
 from models import County
 
 
 @pytest.fixture
-def client(monkeypatch):
+def client():
     app.config['TESTING'] = True
-    if not os.path.exists(os.getenv("DB_FILE_NAME")):
-        recreate_schema()
 
     with app.test_client() as client:
         yield client
