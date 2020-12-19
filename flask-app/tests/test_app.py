@@ -1,6 +1,3 @@
-import os
-import tempfile
-
 import pytest
 
 from app import app
@@ -21,7 +18,7 @@ def test_get_counties(client, mocker):
     session_obj_mock = mocker.MagicMock()
 
     cls_mock = mocker.patch("app.DBSession", return_value=session_obj_mock)
-    client.get(f"/api/v1/counties")
+    client.get("/api/v1/counties")
 
     assert cls_mock.called_once()
     assert session_obj_mock.query.called_with(County)
@@ -34,8 +31,9 @@ def test_get_county(client, mocker):
 
     try:
         client.get(f"/api/v1/counties/{ID}")
-    except:
-        # this is expected to fail due to invalid return value (MagicMock instead of dict)
+    except Exception:
+        # this is expected to fail due to invalid return value
+        # (MagicMock instead of dict)
         pass
 
     assert cls_mock.called_once()
