@@ -4,6 +4,7 @@ _*/
 
 # .env files
 *.env
+!.test.env
 
 # other runtime created files
 *.db
