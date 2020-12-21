@@ -90,7 +90,7 @@ def scrape():
     db_session.commit()
 
 
-trigger = CronTrigger(second="00,15,45,30")
+trigger = CronTrigger(hour="11,18", minute="0")
 
 job = {
     "func": scrape,
