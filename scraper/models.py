@@ -85,3 +85,10 @@ class CasesRecord(Base):
     number_of_cases = Column(Integer, nullable=False)
 
     county = relationship("County", uselist=False, back_populates="cases")
+
+
+class CasesUri(Base):
+    __tablename__ = "cases_uri"
+
+    updated = Column(Date, primary_key=True)
+    uri = Column(String, nullable=False)
