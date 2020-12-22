@@ -78,7 +78,6 @@ def scrape():
             cases = read_csv_from_uri(uri)
             add_cases_db(db_session, cases, date)
             db_session.merge(models.CasesUri(updated=date.date(), uri=uri))
-            print(date, uri)
 
     # today
     uri = get_uri(settings.MZ_TODAY_URI)
