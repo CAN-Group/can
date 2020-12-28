@@ -17,6 +17,8 @@ psycopg2-binary = "*"
 python-dotenv = "*"
 requests = "*"
 sqlalchemy = "*"
+bs4 = "*"
+lxml = "*"
 
 [requires]
 python_version = "3.9"
