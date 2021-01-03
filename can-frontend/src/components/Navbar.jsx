@@ -9,9 +9,9 @@ const NavWrapper = styled.div`
     height: 110px;
     display: flex;
     align-items: center;
-    justify-content: space-around
-    
+    justify-content: space-around;
 `;
+
 
 
 
