@@ -1,18 +1,15 @@
 import React  from 'react';
 import NavBar from './components/Navbar';
+import Footer from './components/Footer';
 
 
 function App() {
 
   return (
-    <div >
-      <NavBar >
-        <h1> jebac </h1>
-      </NavBar>
-
-     
-     
-    </div>
+    <> 
+      <NavBar />
+      <Footer />
+    </>
   );
 }
 
