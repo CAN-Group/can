@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import styled from 'styled-components';
-import { IconContext } from 'react-icons';
-import { FaTwitter, FaFacebookSquare, FaQuestionCircle, FaEnvelope, FaPenSquare, FaLandmark } from "react-icons/fa";
+import styled from 'styled-components'
+import { IconContext } from 'react-icons'
+import { FaTwitter, FaFacebookSquare, FaQuestionCircle, FaEnvelope, FaPenSquare, FaLandmark } from "react-icons/fa"
 
 const StyledFooter = styled.footer`
     height: 270px;
