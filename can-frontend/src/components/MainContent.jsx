@@ -28,7 +28,7 @@ class MainContent extends Component {
             <>
                 <NavSpacing/>
                 <StyledMainContent>
-                    <MapPanel />
+                
                     <InfoContent />
                 </StyledMainContent>
             </>

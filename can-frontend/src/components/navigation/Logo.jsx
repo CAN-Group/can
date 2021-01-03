@@ -4,7 +4,7 @@ import styled from 'styled-components';
 //TODO style logo do poprawy
 
 const LogoImg = styled.div`
-    width: 345px;
+    width: 290px;
     height: 90px;     
     background: url("/images/logo.png") no-repeat center;
     background-size: contain;
@@ -12,9 +12,8 @@ const LogoImg = styled.div`
 
 function Logo(props) {
 
-  
     return (
-            <LogoImg /> 
+         <LogoImg /> 
     );
 }
 

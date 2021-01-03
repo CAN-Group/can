@@ -4,16 +4,15 @@ import styled from 'styled-components';
 import MenuBar from './navigation/MenuBar';
 
 const NavWrapper = styled.nav`
-    background-color : #2C363C;
-    width: auto;
+    background-color: #2C363C;
     height: 110px;
     display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-
+    flex-flow: column wrap;
+    justify-content: center;
+    padding-left: 60px;
     position: fixed;
     top: 0;
-    width: 100%;
+    width: 97%;
     
 `;
 
