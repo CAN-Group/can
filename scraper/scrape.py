@@ -4,12 +4,14 @@ from bs4 import BeautifulSoup
 import settings
 import requests
 import pandas as pd
+import numpy as np
 from datetime import datetime
 import models
 
 
 def read_csv_from_uri(uri):
     df = pd.read_csv(uri, encoding="cp1250", sep=';')
+    df = df.replace(np.nan, 0)
     return df.values.tolist()
 
 
@@ -37,8 +39,13 @@ def get_date_archive(links):
         date = date.replace("\n", "")
         date = date.replace("-", "")
 
-        date = date[:6]
-        format_date_str = "%d%m%y"
+        if int(date[2:4]) <= 12:
+            date = date[:6]
+            format_date_str = "%d%m%y"
+        else:
+            date = date[:8]
+            format_date_str = "%Y%m%d"
+
         date = datetime.strptime(date, format_date_str)
         dates.append(date)
     return dates
@@ -60,7 +67,7 @@ def add_cases_db(db_session, cases, date):
     for case in cases:
         cases_record = models.CasesRecord(
             county_id=case[7], updated=date.date(), number_of_cases=case[2]
-        )
+            )
         db_session.merge(cases_record)
 
 
