@@ -14,7 +14,7 @@ class BaseMixin(object):
                 except DetachedInstanceError:
                     value = "DetachedInstanceError"
                 finally:
-                    fields.append(f"{key}={value}")
+                    fields.append(f"{key.rstrip('_')}={value}")
         output = ",".join(fields)
         return f"{self.__class__.__name__}({output})"
 
