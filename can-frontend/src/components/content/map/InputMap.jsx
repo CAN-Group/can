@@ -9,6 +9,10 @@ const StyledInputMap = styled.div`
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 33px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
 `;
 
 class InputMap extends Component {
@@ -23,7 +27,7 @@ class InputMap extends Component {
     render() {
         return (
             <StyledInputMap>
-                
+                {this.props.children}
             </StyledInputMap>
         )
     }

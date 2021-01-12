@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React  from 'react'
 import styled from 'styled-components'
 import { IconContext } from 'react-icons'
 import { FaTwitter, FaFacebookSquare, FaQuestionCircle, FaEnvelope, FaPenSquare, FaLandmark } from "react-icons/fa"

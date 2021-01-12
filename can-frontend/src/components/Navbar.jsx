@@ -13,7 +13,7 @@ const NavWrapper = styled.nav`
     position: fixed;
     top: 0;
     width: 97%;
-    
+    z-index: 2000; 
 `;
 
 

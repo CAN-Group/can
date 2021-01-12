@@ -20,7 +20,7 @@ function MenuBar(props)
     return( 
         <StyledMenuBar>
             <StyledMenuList>
-                { menuItems.map( item =>  < MenuItem name={item} />) }
+                { menuItems.map( item =>  <MenuItem key={item.toString()} name={item} />) }
             </StyledMenuList>
         </StyledMenuBar>
     );
