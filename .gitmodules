@@ -1,0 +1,3 @@
+[submodule "brouter"]
+	path = brouter
+	url = https://github.com/CAN-Group/brouter.git
