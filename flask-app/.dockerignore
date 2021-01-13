@@ -2,3 +2,8 @@
 !*.py
 !static/
 !Pipfile*
+!run.sh
+
+# directories and files starting with "." or "_"
+.*
+_*
