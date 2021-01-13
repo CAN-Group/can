@@ -1,5 +1,5 @@
-from datetime import date
 import os
+from datetime import date
 
 import requests
 from flask import Flask, Response
@@ -18,7 +18,7 @@ CORS(app, origin={settings.FRONTEND_APP_URL})
 
 
 class WrongDateError(Exception):
-    '''Raised when date conversion fails'''
+    """Raised when date conversion fails"""
 
 
 @app.errorhandler(NoResultFound)
@@ -118,7 +118,7 @@ def extract_cases_from(date, cases_list):
 
 @app.route("/api/v1/cases/")
 def get_cases():
-    '''Get most recent cases for each county.'''
+    """Get most recent cases for each county."""
     db_session = DBSession()
     cases = []
     for county in db_session.query(County):
@@ -132,7 +132,7 @@ def get_cases():
 
 @app.route("/api/v1/cases/<string:date_str>")
 def get_cases_from(date_str):
-    '''Get cases from given date for each county.'''
+    """Get cases from given date for each county."""
     date = str_to_date(date_str)
     db_session = DBSession()
     records = []
@@ -150,7 +150,7 @@ def get_cases_from(date_str):
 
 @app.route("/api/v1/cases/for/<string:county_id>")
 def get_cases_for(county_id):
-    '''Get most recent cases entry for county of given id.'''
+    """Get most recent cases entry for county of given id."""
     db_session = DBSession()
     record = db_session.query(County).filter_by(id_=county_id).one()
     return get_most_recent_cases(record.cases).to_dict()
@@ -158,7 +158,7 @@ def get_cases_for(county_id):
 
 @app.route("/api/v1/cases/<string:date_str>/for/<string:county_id>")
 def get_cases_from_for(date_str, county_id):
-    '''Get cases from given date for county of given id.'''
+    """Get cases from given date for county of given id."""
     date = str_to_date(date_str)
     db_session = DBSession()
     record = db_session.query(County).filter_by(id_=county_id).one()
