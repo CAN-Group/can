@@ -167,4 +167,4 @@ def get_cases_from_for(date_str, county_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=settings.DEBUG)
+    app.run(host="0.0.0.0", debug=settings.DEBUG)
