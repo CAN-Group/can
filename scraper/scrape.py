@@ -65,10 +65,11 @@ def get_links_archive(mz_uri):
 
 def add_cases_db(db_session, cases, date):
     for case in cases:
-        cases_record = models.CasesRecord(
-            county_id=case[7], updated=date.date(), number_of_cases=case[2]
-            )
-        db_session.merge(cases_record)
+        if case[7] != "t0000":
+            cases_record = models.CasesRecord(
+                county_id=case[7], updated=date.date(), number_of_cases=case[2]
+                )
+            db_session.merge(cases_record)
 
 
 def scrape():
