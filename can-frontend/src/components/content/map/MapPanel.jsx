@@ -4,6 +4,9 @@ import styled from 'styled-components'
 import InputMap from './InputMap'
 import LeafletMap from './LeafletMap'
 import SwitchButton from '../../helpers/SwitchButton';
+import AutoTextBox from '../../helpers/AutoTextBox';
+import cities from './../../../assets/metadata/cities.json';
+
 
 const StyledMapPanel = styled.div`
     height: 600px;
@@ -15,13 +18,23 @@ const StyledMapPanel = styled.div`
 
 
 
+
+
+
 function MapPanel(props) {
+    const cityArray = [];
+    const citiesCollection = cities.map(( {city, lat, lng}) => ({city, lat,lng}));
+    
+    citiesCollection.forEach(city => {
+        cityArray.push(city.city);
+    })
     
     return (
         <ContentWrapper>
             <StyledMapPanel>
                 <InputMap>
-                    <SwitchButton />
+                    <AutoTextBox placeholder="Choose starting point..." items = {cityArray} />
+                    <AutoTextBox placeholder="Choose destination..." items = {cityArray} />
                 </InputMap>
                 <LeafletMap />
             </StyledMapPanel>

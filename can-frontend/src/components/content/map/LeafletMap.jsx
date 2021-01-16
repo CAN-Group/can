@@ -1,31 +1,30 @@
 import React, { Component } from 'react'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
+import MapInfoBox from './InfoBoxMap';
 import styled from 'styled-components'
 import 'leaflet/dist/leaflet.css'
 import counties from '../../../assets/metadata/counties.json'
-import {  getCounties } from './map-utils'
+import {  getGeoJson , getData } from './../../helpers/js/apiCalls';
+import DraggableMarker from './../../helpers/DraggableMarker';
 
 const StyledLeafletMap = styled.div`
     flex: 3;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     background-color: #F8F8F8;
+    position: relative;
 `;
-
-const geoJsonStyle = {
-    weight: 0.3,
-    color: 'black',
-    fillColor: "gray",
-    opacity: 0.5,
-
-}
-
-
-
 
 class LeafletMap extends Component {
 
-    zoneLevel = ['red', 'green', 'yellow'];
-    opacity = 0.2;
+   
+    opacity = 0.1;
+    
+    geoJsonStyle = {
+        weight: 0.3,
+        color: 'black',
+        fillColor: "gray",
+        opacity: 0.5,
+    }
 
     constructor(props) {
         super(props);
@@ -34,44 +33,47 @@ class LeafletMap extends Component {
             lat: 52.23,
             lng: 21.01,
             zoom: 6.4,
-            population: [],
+            countyInfo: new Map(),
+            selectedCountyId: 0,
+            geoJson: {},
+            markers: [],
+
         }
+
+        
     }
 
     componentDidMount() {
-        getCounties().then(arr => this.setState({population: arr}));
-    }
-
-    onCountyActive = (event) => {
-        event.target.setStyle({
-            color : "blue",
-            fillColor: "blue",
-            fillOpacity: this.opacity,
-            weight: 0.5,
-        
-        });
+        getData().then(countyInfo => this.setState({countyInfo: countyInfo}));
+        getGeoJson().then(geo => this.setState({geoJson: geo}));
     }
 
     onEeachCounty = (county, layer) => {
-        const countyId = county.properties.id;
-        const countyName = county.properties.nazwa;
 
+        const dangerColor =  this.state.countyInfo.get(county.properties.id).danger
         
-        layer.bindPopup(countyName);
-
-        const colorIndex = Math.floor(Math.random()* this.zoneLevel.length);
-        layer.options.fillColor = this.zoneLevel[colorIndex];
         layer.options.fillOpacity = this.opacity;
+        layer.options.fillColor = dangerColor;
+
 
         layer.on({
-            mouseover: this.onCountyActive,
+            mouseover: e => {
+                e.target.setStyle({
+                    color : "blue",
+                    fillColor: "blue",
+                    fillOpacity: this.opacity,
+                    weight: 0.5,
+                })
+                this.setState({selectedCountyId: county.properties.id})
+            },
             mouseout: e => {
                 e.target.setStyle({
                     weight: 0.3,
                     color: 'black',
-                    fillColor: this.zoneLevel[colorIndex],
-                    fillOpacity: this.opacity,   
+                    fillColor: dangerColor,
+                    fillOpacity: this.opacity,  
                 })
+                this.setState({selectedCountyId: 0});
             },
         });
     }
@@ -79,20 +81,42 @@ class LeafletMap extends Component {
     render() {
         const position = [this.state.lat, this.state.lng];
 
-        return (
+        let infoBox;
+        if(this.state.selectedCountyId !== 0)
+        {
+            const county = this.state.countyInfo.get(this.state.selectedCountyId);
+
+            infoBox =  <MapInfoBox countyName={county.name} 
+                                   countyPopulation={county.population}
+                                   casesNumber={county.casesCount}
+                                   caseUpdate= {county.lastUpdate} 
+                        />               
+        }
+
+        let geojson;
+        if(this.state.countyInfo.size !== 0)
+        {
+            geojson = <GeoJSON data= {counties.features}
+                        onEachFeature={this.onEeachCounty}
+                        style={this.geoJsonStyle}
+                      /> 
+        }
+
+        return (  
             <StyledLeafletMap>
                 <MapContainer center={position} zoom={this.state.zoom} style={{height:'100%'}}>
+                
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
                 />
-                <GeoJSON data= {counties.features}
-                         onEachFeature={this.onEeachCounty}
-                         style={geoJsonStyle}
-                />
-                         
+                { geojson }
+                <DraggableMarker type='MarkerA'/>
+                <DraggableMarker type='MarkerB'/>
+
                 </MapContainer>
-            </StyledLeafletMap>
+                { infoBox }
+            </StyledLeafletMap>         
         )
     }
 }
