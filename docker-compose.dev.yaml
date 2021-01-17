@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+
+  scraper:
+    image: can/scraper:dev
+
+  backend:
+    image: can/flask-app:dev
+    environment:
+      DEBUG: "true"
+
+  router:
+    image: can/brouter:dev
+    ports:
+        - "17777:17777"
+
+  database:
+    ports:
+      - 5432:5432
