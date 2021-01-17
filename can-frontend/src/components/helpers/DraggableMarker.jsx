@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import L from 'leaflet';
 import  { Marker } from 'react-leaflet';
 
@@ -10,14 +10,9 @@ function getIcon(_iconSize, type){
     })
 }
 
-const center = {
-    lat: 51.505,
-    lng: -0.09,
-  }
   
 function DraggableMarker(props) {
-    const [draggable, setDraggable] = useState(false)
-    const [position, setPosition] = useState(center)
+    const [position, setPosition] = useState(props.position)
     const markerRef = useRef(null)
     const eventHandlers = useMemo(
       () => ({
@@ -25,14 +20,20 @@ function DraggableMarker(props) {
           const marker = markerRef.current
           if (marker != null) {
             setPosition(marker.getLatLng())
+            console.log(marker.getLatLng().lng +"    " + marker.getLatLng().lat);
           }
         },
       }),
       [],
     )
+
+    useEffect(() =>{
+       setPosition(props.position);
+    }, [props.position]);
+      
+
     return (
       <Marker
-
         draggable={true}
         icon={getIcon(60,props.type)}
         eventHandlers={eventHandlers}

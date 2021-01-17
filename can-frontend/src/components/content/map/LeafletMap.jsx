@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
+import { MapContainer, TileLayer, GeoJSON} from 'react-leaflet'
 import MapInfoBox from './InfoBoxMap';
 import styled from 'styled-components'
 import 'leaflet/dist/leaflet.css'
-import counties from '../../../assets/metadata/counties.json'
 import {  getGeoJson , getData } from './../../helpers/js/apiCalls';
 import DraggableMarker from './../../helpers/DraggableMarker';
+
 
 const StyledLeafletMap = styled.div`
     flex: 3;
@@ -14,9 +14,8 @@ const StyledLeafletMap = styled.div`
     position: relative;
 `;
 
-class LeafletMap extends Component {
 
-   
+class LeafletMap extends Component {
     opacity = 0.1;
     
     geoJsonStyle = {
@@ -37,10 +36,7 @@ class LeafletMap extends Component {
             selectedCountyId: 0,
             geoJson: {},
             markers: [],
-
         }
-
-        
     }
 
     componentDidMount() {
@@ -96,7 +92,7 @@ class LeafletMap extends Component {
         let geojson;
         if(this.state.countyInfo.size !== 0)
         {
-            geojson = <GeoJSON data= {counties.features}
+            geojson = <GeoJSON data= {this.state.geoJson.features}
                         onEachFeature={this.onEeachCounty}
                         style={this.geoJsonStyle}
                       /> 
@@ -104,15 +100,21 @@ class LeafletMap extends Component {
 
         return (  
             <StyledLeafletMap>
-                <MapContainer center={position} zoom={this.state.zoom} style={{height:'100%'}}>
-                
+                <MapContainer center={position}
+                              zoom={this.state.zoom} 
+                              style={{height:'100%'}}
+                              scrollWheelZoom={true}
+                              >
+                                
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
                 />
                 { geojson }
-                <DraggableMarker type='MarkerA'/>
-                <DraggableMarker type='MarkerB'/>
+                <DraggableMarker type='MarkerA' position={this.props.markerStart}/>
+                <DraggableMarker type='MarkerB' position={this.props.markerStop} />
+                
+                {this.props.children}
 
                 </MapContainer>
                 { infoBox }

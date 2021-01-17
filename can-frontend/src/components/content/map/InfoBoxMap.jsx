@@ -63,15 +63,15 @@ function InfoBoxMap(props) {
            
             <StyledInfoLabel>
             <StyledLabel>
-                {props.casesNumber !=0 && <FaSyringe  style={{fontSize: '24px'}}/>}
+                {props.casesNumber !==0 && <FaSyringe  style={{fontSize: '24px'}}/>}
             </StyledLabel> 
-                {props.casesNumber !=0 && <StyledSpan>{props.casesNumber}</StyledSpan>}
+                {props.casesNumber !==0 && <StyledSpan>{props.casesNumber}</StyledSpan>}
             </StyledInfoLabel>
             <StyledInfoLabel>
                 <StyledLabel>
                     <FaUsers style={{fontSize: '24px'}}/>
                 </StyledLabel> 
-                {props.countyPopulation != 0 && <StyledSpan>{props.countyPopulation}</StyledSpan> }
+                {props.countyPopulation !== 0 && <StyledSpan>{props.countyPopulation}</StyledSpan> }
             </StyledInfoLabel>
             <StyledInfoLabel>
             <StyledLabel>

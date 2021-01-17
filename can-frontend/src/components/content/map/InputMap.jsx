@@ -12,6 +12,7 @@ const StyledInputMap = styled.div`
     align-items: center;
     justify-content: center;
     flex-flow: column nowrap;
+    position: relative;
 `;
 
 class InputMap extends Component {

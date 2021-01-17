@@ -74,6 +74,7 @@ class AutoTextbox  extends Component {
             text: value,
             suggestions: [],
         }))
+        this.props.onSelection(value, this.props.type);
     }
 
     renderSuggestions () {
@@ -90,7 +91,6 @@ class AutoTextbox  extends Component {
 
     }
     
-
     render() {
         const { text } = this.state;
         return (
@@ -100,8 +100,6 @@ class AutoTextbox  extends Component {
             </StyledAutoComplete>
         );
     }
-
 }
 
 export default AutoTextbox;
-

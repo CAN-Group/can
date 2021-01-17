@@ -70,7 +70,7 @@ async function setZoneLevel(countyInfo)
     ratioLevel.sort( (a,b) => a.ratio - b.ratio);
   
     const lowThresshold = Math.floor(0.3 * ratioLevel.length);
-    const highThresshold = Math.floor(0.7 * ratioLevel.length);
+    const highThresshold = Math.floor(0.8 * ratioLevel.length);
 
     let color;
     ratioLevel.forEach( (county, index) =>{
