@@ -1,14 +1,15 @@
-from datetime import date
 import os
+from datetime import date
 
 import requests
-from flask import Flask, Response
+from flask import Flask, Response, request
 from flask_cors import CORS
 from sqlalchemy.orm.exc import NoResultFound
 
 import settings
 from database import DBSession
 from models import County, Voivodeship
+from route_args import format_route_args, parse_route_args
 
 app = Flask(__name__, static_folder="./static")
 app.config["JSON_AS_ASCII"] = False
@@ -18,7 +19,7 @@ CORS(app, origin={settings.FRONTEND_APP_URL})
 
 
 class WrongDateError(Exception):
-    '''Raised when date conversion fails'''
+    """Raised when date conversion fails"""
 
 
 @app.errorhandler(NoResultFound)
@@ -60,6 +61,48 @@ def proxy_request_to_brouter(parameters):
         for (key, value) in response.headers.items()
         if key.lower() not in excluded_headers
     ]
+    return Response(response.content, response.status_code, headers)
+
+
+@app.route("/api/v2/route/help")
+def proxy_request_to_brouter_help_v2():
+    return (
+        "<p>URL parameters:</p>"
+        "<p>start: &lt;float,float&gt;, GPS position, eg. '18.1,53.5'</p>"
+        "<p>finish: &lt;float,float&gt;, GPS position, eg. '18.1,53.5'</p>"
+        "<p>format: &lt;str&gt;, 'gps', 'kml', or 'geojson'; default: 'gpx'</p>"
+        "<p>profile: &lt;str&gt;, 'car-eco' or 'car-fast'; default: 'car-fast'</p>"
+        "<p>variant: &lt;int&gt;, 0-4; default: 0</p>"
+        "</p>"
+        "<p>example: route?start=18.1,53.5&finish=19.1,54.5&profile=car-fast&"
+        "variant=1</p>"
+    )
+
+
+@app.route("/api/v2/route")
+def proxy_request_to_brouter_v2():
+    try:
+        parameters = parse_route_args(request.args)
+    except ValueError as exception:
+        return str(exception), 400
+
+    url_params = format_route_args(parameters)
+    base_url = settings.ROUTING_APP_URL
+    url = f"{base_url}?{url_params}"
+
+    response = requests.get(url)
+    excluded_headers = [
+        "content-encoding",
+        "content-length",
+        "transfer-encoding",
+        "connection",
+    ]
+    headers = [
+        (key, value)
+        for (key, value) in response.headers.items()
+        if key.lower() not in excluded_headers
+    ]
+
     return Response(response.content, response.status_code, headers)
 
 
@@ -118,7 +161,7 @@ def extract_cases_from(date, cases_list):
 
 @app.route("/api/v1/cases/")
 def get_cases():
-    '''Get most recent cases for each county.'''
+    """Get most recent cases for each county."""
     db_session = DBSession()
     cases = []
     for county in db_session.query(County):
@@ -132,7 +175,7 @@ def get_cases():
 
 @app.route("/api/v1/cases/<string:date_str>")
 def get_cases_from(date_str):
-    '''Get cases from given date for each county.'''
+    """Get cases from given date for each county."""
     date = str_to_date(date_str)
     db_session = DBSession()
     records = []
@@ -150,7 +193,7 @@ def get_cases_from(date_str):
 
 @app.route("/api/v1/cases/for/<string:county_id>")
 def get_cases_for(county_id):
-    '''Get most recent cases entry for county of given id.'''
+    """Get most recent cases entry for county of given id."""
     db_session = DBSession()
     record = db_session.query(County).filter_by(id_=county_id).one()
     return get_most_recent_cases(record.cases).to_dict()
@@ -158,7 +201,7 @@ def get_cases_for(county_id):
 
 @app.route("/api/v1/cases/<string:date_str>/for/<string:county_id>")
 def get_cases_from_for(date_str, county_id):
-    '''Get cases from given date for county of given id.'''
+    """Get cases from given date for county of given id."""
     date = str_to_date(date_str)
     db_session = DBSession()
     record = db_session.query(County).filter_by(id_=county_id).one()
