@@ -1,16 +1,18 @@
-from apscheduler.triggers.cron import CronTrigger
-from database import DBSession
-from bs4 import BeautifulSoup
-import settings
-import requests
-import pandas as pd
-import numpy as np
 from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import requests
+from apscheduler.triggers.cron import CronTrigger
+from bs4 import BeautifulSoup
+
 import models
+import settings
+from database import DBSession
 
 
 def read_csv_from_uri(uri):
-    df = pd.read_csv(uri, encoding="cp1250", sep=';')
+    df = pd.read_csv(uri, encoding="cp1250", sep=";")
     df = df.replace(np.nan, 0)
     return df.values.tolist()
 
@@ -52,7 +54,7 @@ def get_date_archive(links):
 
 
 def get_uri_archive(mz_uri, links):
-    uris = [mz_uri.rsplit('/', 3)[0] + link.get("href") for link in links]
+    uris = [mz_uri.rsplit("/", 3)[0] + link.get("href") for link in links]
     return uris
 
 
@@ -67,7 +69,7 @@ def add_cases_db(db_session, cases, date):
     for case in cases:
         cases_record = models.CasesRecord(
             county_id=case[7], updated=date.date(), number_of_cases=case[2]
-            )
+        )
         db_session.merge(cases_record)
 
 
