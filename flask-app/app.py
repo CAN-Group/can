@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import settings
 from database import DBSession
 from models import County, Voivodeship
-from route_args import format_route_args, parse_route_args
+from route_args import parse_route_args
 
 app = Flask(__name__, static_folder="./static")
 app.config["JSON_AS_ASCII"] = False
