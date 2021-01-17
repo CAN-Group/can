@@ -86,9 +86,8 @@ def proxy_request_to_brouter_v2():
     except ValueError as exception:
         return str(exception), 400
 
-    url_params = format_route_args(parameters)
     base_url = settings.ROUTING_APP_URL
-    url = f"{base_url}?{url_params}"
+    url = f"{base_url}?{parameters}"
 
     response = requests.get(url)
     excluded_headers = [

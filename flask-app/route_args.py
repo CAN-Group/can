@@ -98,23 +98,19 @@ classes: Dict[str, URLParameter] = {
 
 def parse_route_args(args):
     errors = []
-    parameters: Dict[str, str] = {}
+    params: Dict[str, str] = {}
     for parameter, class_ in classes.items():
         try:
             var = class_.try_parse(args.get(parameter))
         except ValueError as exception:
             errors.append(f"{parameter}: {exception}")
         else:
-            parameters[parameter] = var.format()
+            params[parameter] = var.format()
 
     if errors:
         raise ValueError("\n".join(errors))
 
-    return parameters
-
-
-def format_route_args(args):
     return (
-        f"lonlats={args['start']}|{args['finish']}&format={args['format']}&"
-        f"profile={args['profile']}&alternativeidx={args['variant']}"
+        f"lonlats={params['start']}|{params['finish']}&format={params['format']}&"
+        f"profile={params['profile']}&alternativeidx={params['variant']}"
     )
