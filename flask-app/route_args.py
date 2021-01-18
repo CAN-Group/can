@@ -1,4 +1,11 @@
+import json
 from typing import Dict
+
+ROUTING_PROFILES_FILE = "./static/routing_profiles.json"
+VALID_ROUTING_PROFILES = []
+
+with open(ROUTING_PROFILES_FILE, "r") as file:
+    VALID_ROUTING_PROFILES = json.load(file)
 
 
 class URLParameter:
@@ -55,9 +62,6 @@ class Format(URLParameter):
         return self.name
 
 
-valid_profiles = ["car-eco", "car-fast"]
-
-
 class Profile(URLParameter):
     name: str
 
@@ -68,7 +72,7 @@ class Profile(URLParameter):
     def try_parse(cls, name: str):
         if not name:
             name = "car-fast"
-        if name not in valid_profiles:
+        if name not in VALID_ROUTING_PROFILES:
             raise ValueError("Invalid profile name")
         return cls(name=name)
 
