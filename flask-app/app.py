@@ -2,7 +2,7 @@ import os
 from datetime import date
 
 import requests
-from flask import Flask, Response, request
+from flask import Flask, Response, jsonify, render_template, request
 from flask_cors import CORS
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -11,7 +11,7 @@ from database import DBSession
 from models import County, Voivodeship
 from route_args import parse_route_args
 
-app = Flask(__name__, static_folder="./static")
+app = Flask(__name__, static_folder="./static", template_folder="./public")
 app.config["JSON_AS_ASCII"] = False
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 
@@ -66,17 +66,7 @@ def proxy_request_to_brouter(parameters):
 
 @app.route("/api/v2/route/help")
 def proxy_request_to_brouter_help_v2():
-    return (
-        "<p>URL parameters:</p>"
-        "<p>start: &lt;float,float&gt;, GPS position, eg. '18.1,53.5'</p>"
-        "<p>finish: &lt;float,float&gt;, GPS position, eg. '18.1,53.5'</p>"
-        "<p>format: &lt;str&gt;, 'gps', 'kml', or 'geojson'; default: 'gpx'</p>"
-        "<p>profile: &lt;str&gt;, 'car-eco' or 'car-fast'; default: 'car-fast'</p>"
-        "<p>variant: &lt;int&gt;, 0-4; default: 0</p>"
-        "</p>"
-        "<p>example: route?start=18.1,53.5&finish=19.1,54.5&profile=car-fast&"
-        "variant=1</p>"
-    )
+    return render_template("route_v2_help.html")
 
 
 @app.route("/api/v2/route")
@@ -84,7 +74,7 @@ def proxy_request_to_brouter_v2():
     try:
         parameters = parse_route_args(request.args)
     except ValueError as exception:
-        return str(exception), 400
+        return jsonify(errors=exception.args[0]), 400
 
     base_url = settings.ROUTING_APP_URL
     url = f"{base_url}?{parameters}"
