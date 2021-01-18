@@ -24,12 +24,17 @@ class WrongDateError(Exception):
 
 @app.errorhandler(NoResultFound)
 def handle_no_data(e):
-    return "No data available", 400
+    return jsonify(error="No data available"), 400
 
 
 @app.errorhandler(WrongDateError)
 def handle_wrong_date(e):
-    return "Wrong date provided. Please use the proper format: 'YYYY-MM-DD'", 400
+    return (
+        jsonify(
+            error="Wrong date provided. Please use the proper format: 'YYYY-MM-DD'"
+        ),
+        400,
+    )
 
 
 @app.route("/")
