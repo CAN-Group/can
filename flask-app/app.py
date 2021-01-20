@@ -1,7 +1,8 @@
 import os
 from datetime import date
 
-from flask import Flask, jsonify, render_template, request
+import requests
+from flask import Flask, Response, jsonify, render_template, request
 from flask_cors import CORS
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -21,8 +22,13 @@ class BadRequestArgumentException(Exception):
     pass
 
 
-class WrongDateError:
+class WrongDateError(BadRequestArgumentException):
     """Raised when date conversion fails"""
+
+    def __init__(self):
+        return super(WrongDateError, self).__init__(
+            "Wrong date provided. Please use the proper format: 'YYYY-MM-DD'"
+        )
 
 
 @app.errorhandler(BadRequestArgumentException)
@@ -59,12 +65,12 @@ def sitemap():
 
 
 @app.route("/api/v1/route/help")
-def proxy_request_to_brouter_help_v2():
-    return render_template("route_v2_help.html")
+def proxy_request_to_brouter_help():
+    return render_template("route_help.html")
 
 
 @app.route("/api/v1/route")
-def proxy_request_to_brouter_v2():
+def proxy_request_to_brouter_v1():
     try:
         return get_route(request.args)
     except ValueError as exception:
