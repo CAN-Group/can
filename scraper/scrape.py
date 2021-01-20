@@ -11,12 +11,12 @@ import json
 
 
 def get_json_today_cases():
-    r=requests.get(url=settings.MZ_TODAY_URI, params=settings.PAYLOAD_DATA)
-    return json.loads(r.text)['features']
+    r = requests.get(url=settings.MZ_TODAY_URI, params=settings.PAYLOAD_DATA)
+    return json.loads(r.text)["features"]
 
 
 def read_csv_from_uri(uri):
-    df = pd.read_csv(uri, encoding="cp1250", sep=';')
+    df = pd.read_csv(uri, encoding="cp1250", sep=";")
     df = df.replace(np.nan, 0)
     return df.values.tolist()
 
@@ -58,7 +58,7 @@ def get_date_archive(links):
 
 
 def get_uri_archive(mz_uri, links):
-    uris = [mz_uri.rsplit('/', 3)[0] + link.get("href") for link in links]
+    uris = [mz_uri.rsplit("/", 3)[0] + link.get("href") for link in links]
     return uris
 
 
@@ -74,18 +74,18 @@ def add_cases_db_archive(db_session, cases, date):
         if case[7] != "t0000":
             cases_record = models.CasesRecord(
                 county_id=case[7], updated=date.date(), number_of_cases=case[2]
-                )
+            )
             db_session.merge(cases_record)
 
 
 def add_cases_db_today(db_session, cases, date):
     for case in cases:
-        teryt = case['attributes']['JPT_KJ_I_2']
-        confirmed = case['attributes']['POTWIERDZONE_DZIENNE']
+        teryt = case["attributes"]["JPT_KJ_I_2"]
+        confirmed = case["attributes"]["POTWIERDZONE_DZIENNE"]
 
         cases_record = models.CasesRecord(
-                county_id=teryt, updated=date.date(), number_of_cases=confirmed
-                )
+            county_id=teryt, updated=date.date(), number_of_cases=confirmed
+        )
         db_session.merge(cases_record)
 
 
@@ -99,7 +99,9 @@ def scrape():
     dates = get_date_archive(links)
 
     for uri, date in zip(uris, dates):
-        db_session.query(models.CasesUri).filter(models.CasesUri.updated == date).update({'uri': uri})
+        db_session.query(models.CasesUri).filter(
+            models.CasesUri.updated == date
+        ).update({"uri": uri})
         if uri not in uri_archive_db:
             cases = read_csv_from_uri(uri)
             add_cases_db_archive(db_session, cases, date)
@@ -109,9 +111,10 @@ def scrape():
     cases = get_json_today_cases()
     date = get_date_from_uri(settings.MZ_TODAY_URI, settings.PAYLOAD_DATA)
     add_cases_db_today(db_session, cases, date)
-    
-    db_session.merge(models.CasesUri(updated=date.date(), uri='temp_uri'))
+
+    db_session.merge(models.CasesUri(updated=date.date(), uri="temp_uri"))
     db_session.commit()
+
 
 trigger = CronTrigger(hour="11,18", minute="0")
 
