@@ -1,15 +1,14 @@
 import os
 from datetime import date
 
-import requests
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from sqlalchemy.orm.exc import NoResultFound
 
 import settings
 from database import DBSession
 from models import County, Voivodeship
-from route_args import parse_route_args
+from router_proxy import get_route
 
 app = Flask(__name__, static_folder="./static", template_folder="./public")
 app.config["JSON_AS_ASCII"] = False
@@ -18,8 +17,17 @@ app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 CORS(app, origin={settings.FRONTEND_APP_URL})
 
 
-class WrongDateError(Exception):
+class BadRequestArgumentException(Exception):
+    pass
+
+
+class WrongDateError:
     """Raised when date conversion fails"""
+
+
+@app.errorhandler(BadRequestArgumentException)
+def handle_bad_request(e):
+    return jsonify(error=str(e)), 400
 
 
 @app.errorhandler(NoResultFound)
@@ -50,54 +58,17 @@ def sitemap():
     return endpoints
 
 
-@app.route("/api/v1/route/<string:parameters>")
-def proxy_request_to_brouter(parameters):
-    url = settings.ROUTING_APP_URL
-    url = f"{url}?{parameters}"
-    response = requests.get(url)
-    excluded_headers = [
-        "content-encoding",
-        "content-length",
-        "transfer-encoding",
-        "connection",
-    ]
-    headers = [
-        (key, value)
-        for (key, value) in response.headers.items()
-        if key.lower() not in excluded_headers
-    ]
-    return Response(response.content, response.status_code, headers)
-
-
-@app.route("/api/v2/route/help")
+@app.route("/api/v1/route/help")
 def proxy_request_to_brouter_help_v2():
     return render_template("route_v2_help.html")
 
 
-@app.route("/api/v2/route")
+@app.route("/api/v1/route")
 def proxy_request_to_brouter_v2():
     try:
-        parameters = parse_route_args(request.args)
+        return get_route(request.args)
     except ValueError as exception:
         return jsonify(errors=exception.args[0]), 400
-
-    base_url = settings.ROUTING_APP_URL
-    url = f"{base_url}?{parameters}"
-
-    response = requests.get(url)
-    excluded_headers = [
-        "content-encoding",
-        "content-length",
-        "transfer-encoding",
-        "connection",
-    ]
-    headers = [
-        (key, value)
-        for (key, value) in response.headers.items()
-        if key.lower() not in excluded_headers
-    ]
-
-    return Response(response.content, response.status_code, headers)
 
 
 def get_regions(model):
