@@ -1,4 +1,4 @@
-import {useMap} from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import L from 'leaflet-gpx';
 import gpx from './example.gpx';
 

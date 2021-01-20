@@ -9,6 +9,7 @@ import cities from './../../../assets/metadata/cities.json';
 import { FaBreadSlice } from 'react-icons/fa'
 import MapComponent from './MapComponent';
 import SubmitButton from '../../helpers/SubmitButton'
+import ZoneSlider from './../../helpers/ZoneSlider'
 
 
 const StyledMapPanel = styled.div`
@@ -30,6 +31,7 @@ export default class Mappanel extends Component {
             citiesCollection: [],
             markerStart: {lat: 54, lng: 19},
             markerStop: {lat: 53, lng: 21},
+            toggled: false,
         };
     }
 
@@ -76,9 +78,11 @@ export default class Mappanel extends Component {
             <ContentWrapper>
                 <StyledMapPanel>
                     <InputMap>
+                        <ZoneSlider />
                         <AutoTextBox placeholder="Choose starting point..." items = {cityArray} onSelection={this.onSelectedCity} type="MarkerA" />
                         <AutoTextBox placeholder="Choose destination..." items = {cityArray} onSelection={this.onSelectedCity} type="MarkerB"/>
                         <SubmitButton onClick={null}/>
+                        <SwitchButton />
                     </InputMap>
                     <LeafletMap markerStart={this.state.markerStart} markerStop={this.state.markerStop} >
                         <MapComponent />

@@ -60,7 +60,6 @@ function InfoBoxMap(props) {
             </StyledLabel> 
                 {props.countyName && <StyledSpan>{props.countyName}</StyledSpan>}
             </StyledInfoLabel>
-           
             <StyledInfoLabel>
             <StyledLabel>
                 {props.casesNumber !==0 && <FaSyringe  style={{fontSize: '24px'}}/>}

@@ -9,13 +9,17 @@ const StyledMenuItem = styled.li`
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     width: 140px;
     height: 50px;
+    transition: 0.6s;
+    border-radius: 59px;
 
     &:hover {
         background-color: #1084C3;
         color: white;
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-        border-radius: 59px;
+        transition: 0.6s;
     }
+
+    
 
     display: flex;
     justify-content: center;
@@ -26,7 +30,6 @@ const StyledMenuItem = styled.li`
 
 class MenuItem extends React.Component
 {
-    
     render() {
         return (
         <StyledMenuItem onClick={this.props.onClick} >
