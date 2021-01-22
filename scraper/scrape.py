@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 import numpy as np
@@ -10,6 +11,18 @@ import models
 import settings
 from database import DBSession
 
+payload = {
+    "f": "json",
+    "where": "1=1",
+    "outFields": "POTWIERDZONE_DZIENNE,JPT_KJ_I_2",
+    "returnGeometry": "false",
+}
+
+
+def get_json_today_cases():
+    r = requests.get(url=settings.MZ_TODAY_URI, params=payload)
+    return json.loads(r.text)["features"]
+
 
 def read_csv_from_uri(uri):
     df = pd.read_csv(uri, encoding="cp1250", sep=";")
@@ -17,8 +30,8 @@ def read_csv_from_uri(uri):
     return df.values.tolist()
 
 
-def get_date_from_uri(uri):
-    r = requests.get(uri)
+def get_date_from_uri(uri, params):
+    r = requests.get(url=uri, params=params)
     date_str = r.headers["last-modified"]
     format_date_str = "%a, %d %b %Y %H:%M:%S %Z"
     return datetime.strptime(date_str, format_date_str)
@@ -65,10 +78,22 @@ def get_links_archive(mz_uri):
     return links
 
 
-def add_cases_db(db_session, cases, date):
+def add_cases_db_archive(db_session, cases, date):
     for case in cases:
+        if case[7] != "t0000":
+            cases_record = models.CasesRecord(
+                county_id=case[7], updated=date.date(), number_of_cases=case[2]
+            )
+            db_session.merge(cases_record)
+
+
+def add_cases_db_today(db_session, cases, date):
+    for case in cases:
+        teryt = case["attributes"]["JPT_KJ_I_2"]
+        confirmed = case["attributes"]["POTWIERDZONE_DZIENNE"]
+
         cases_record = models.CasesRecord(
-            county_id=case[7], updated=date.date(), number_of_cases=case[2]
+            county_id=teryt, updated=date.date(), number_of_cases=confirmed
         )
         db_session.merge(cases_record)
 
@@ -83,18 +108,20 @@ def scrape():
     dates = get_date_archive(links)
 
     for uri, date in zip(uris, dates):
+        db_session.query(models.CasesUri).filter(
+            models.CasesUri.updated == date
+        ).update({"uri": uri})
         if uri not in uri_archive_db:
             cases = read_csv_from_uri(uri)
-            add_cases_db(db_session, cases, date)
+            add_cases_db_archive(db_session, cases, date)
             db_session.merge(models.CasesUri(updated=date.date(), uri=uri))
 
     # today
-    uri = get_uri(settings.MZ_TODAY_URI)
+    cases = get_json_today_cases()
+    date = get_date_from_uri(settings.MZ_TODAY_URI, payload)
+    add_cases_db_today(db_session, cases, date)
 
-    cases = read_csv_from_uri(uri)
-    date = get_date_from_uri(uri)
-    add_cases_db(db_session, cases, date)
-    db_session.merge(models.CasesUri(updated=date.date(), uri=uri))
+    db_session.merge(models.CasesUri(updated=date.date(), uri="temp_uri"))
     db_session.commit()
 
 

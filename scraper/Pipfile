@@ -11,14 +11,14 @@ pytest = "*"
 
 [packages]
 apscheduler = "*"
+bs4 = "*"
+lxml = "*"
 numpy = "==1.19.3"
 pandas = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
 requests = "*"
 sqlalchemy = "*"
-bs4 = "*"
-lxml = "*"
 
 [requires]
 python_version = "3.9"

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-import settings
+import settings, scrape
 from database import recreate_schema
 from scheduler import scheduler
 
@@ -20,7 +20,7 @@ else:
 
 def run():
     recreate_schema()
-
+    scrape.scrape()
     scheduler.start()
     try:
         asyncio.get_event_loop().run_forever()

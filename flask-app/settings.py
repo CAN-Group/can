@@ -6,6 +6,6 @@ load_dotenv()
 
 DEBUG = getenv("DEBUG", "").lower() in ("true", "1")
 
-DB_CONNECTION_URI = getenv("DB_CONNECTION_URI", "sqlite:///dev.db")
+DB_CONNECTION_URI = getenv("DB_CONNECTION_URI", "sqlite:///../dev.db")
 FRONTEND_APP_URL = getenv("FRONTEND_APP_URL", "http://localhost:3000")
 ROUTING_APP_URL = getenv("ROUTING_APP_URL", "http://localhost:17777/brouter")
