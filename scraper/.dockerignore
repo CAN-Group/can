@@ -1,0 +1,4 @@
+*
+!*.py
+!static_data/
+!Pipfile*
