@@ -4,11 +4,14 @@ import { IconContext } from 'react-icons'
 import { FaTwitter, FaFacebookSquare, FaQuestionCircle, FaEnvelope, FaPenSquare, FaLandmark } from "react-icons/fa"
 
 const StyledFooter = styled.footer`
-    height: 270px;
+    height: 170px;
     background-color: #2C363C;
     display: flex;
     align-items: stretch;
     justify-content: space-around;
+    width: 100%;
+    bottom: 0;
+    position: fixed;
 `;
 
 const StyledLinkSection = styled.section`
@@ -20,7 +23,7 @@ const StyledLinkSection = styled.section`
 `;
 
 const StyledLink = styled.a`
-    padding 25px 0 25px 20px;
+    padding 15px 0 10px 10px;
     border-bottom: 1px solid #F5F5F5;
     width: 450px;
     display: flex;
@@ -34,13 +37,12 @@ const iconStyle = {
 
 const StyledSpan = styled.span`
     color: #F5F5F5;
-    margin-left: 12px;
+    margin-left: 10px;
     font-family: Simonetta;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 12px;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `;
-
 function Footer(props) {
     
     return (  
