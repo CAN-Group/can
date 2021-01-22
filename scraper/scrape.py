@@ -10,8 +10,16 @@ import models
 import json
 
 
+payload = {
+  "f": "json",
+  "where": "1=1",
+  "outFields": "POTWIERDZONE_DZIENNE,JPT_KJ_I_2",
+  "returnGeometry": "false"
+}
+
+
 def get_json_today_cases():
-    r = requests.get(url=settings.MZ_TODAY_URI, params=settings.PAYLOAD_DATA)
+    r = requests.get(url=settings.MZ_TODAY_URI, params=payload)
     return json.loads(r.text)["features"]
 
 
@@ -109,7 +117,7 @@ def scrape():
 
     # today
     cases = get_json_today_cases()
-    date = get_date_from_uri(settings.MZ_TODAY_URI, settings.PAYLOAD_DATA)
+    date = get_date_from_uri(settings.MZ_TODAY_URI, payload)
     add_cases_db_today(db_session, cases, date)
 
     db_session.merge(models.CasesUri(updated=date.date(), uri="temp_uri"))
