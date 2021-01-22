@@ -12,6 +12,9 @@ COUNTIES_SHAPES = {}
 ROUTING_PROFILES_FILE = "./static/routing_profiles.json"
 VALID_ROUTING_PROFILES = []
 
+with open("static/poland.outline", "r") as f:
+    POLAND_OUTLINE_PARAMETER = f.read()
+
 
 def parse_polygon(pairs_list):
     # pairs_list is actually a list containing a list of pairs, so:
@@ -268,7 +271,7 @@ def get_route(args):
     parameters = parse_route_args(args)
 
     base_url = settings.ROUTING_APP_URL
-    url = f"{base_url}?{parameters}"
+    url = f"{base_url}?{parameters}&polylines={POLAND_OUTLINE_PARAMETER}"
 
     response = requests.get(url)
     excluded_headers = [
