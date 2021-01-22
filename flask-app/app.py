@@ -1,17 +1,17 @@
 import os
+from collections import OrderedDict
 from datetime import date
 
-import requests
-from flask import Flask, Response, request
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from sqlalchemy.orm.exc import NoResultFound
 
 import settings
 from database import DBSession
 from models import County, Voivodeship
-from route_args import parse_route_args
+from router_proxy import BadRequestArgumentException, get_route
 
-app = Flask(__name__, static_folder="./static")
+app = Flask(__name__, static_folder="./static", template_folder="./public")
 app.config["JSON_AS_ASCII"] = False
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 
@@ -22,97 +22,78 @@ class WrongDateError(Exception):
     """Raised when date conversion fails"""
 
 
+if settings.DEBUG:
+
+    @app.errorhandler(Exception)
+    def handle_bad_request(e):
+        return jsonify(error="unexpected error", error_reason=str(e)), 400
+
+
+@app.errorhandler(BadRequestArgumentException)
+def handle_bad_proxy_request(e):
+    return (
+        jsonify(
+            error="bad route request url parameters",
+            error_reasons=e.args[0],
+        ),
+        400,
+    )
+
+
 @app.errorhandler(NoResultFound)
 def handle_no_data(e):
-    return "No data available", 400
+    return jsonify(error="no data found", error_reason=str(e)), 400
 
 
 @app.errorhandler(WrongDateError)
 def handle_wrong_date(e):
-    return "Wrong date provided. Please use the proper format: 'YYYY-MM-DD'", 400
+    return (
+        jsonify(
+            error="date parsing error",
+            error_reason=str(e),
+        ),
+        400,
+    )
 
 
 @app.route("/")
 def sitemap():
-    endpoints = {
-        rule.rule: rule.endpoint
-        for rule in app.url_map.iter_rules()
-        if rule.endpoint != "static"
-    }
-    static_files = os.listdir("./static")
-    for static_file_path in static_files:
-        endpoints[f"/static/{static_file_path}"] = static_file_path
-    return endpoints
-
-
-@app.route("/api/v1/route/<string:parameters>")
-def proxy_request_to_brouter(parameters):
-    url = settings.ROUTING_APP_URL
-    url = f"{url}?{parameters}"
-    response = requests.get(url)
-    excluded_headers = [
-        "content-encoding",
-        "content-length",
-        "transfer-encoding",
-        "connection",
-    ]
-    headers = [
-        (key, value)
-        for (key, value) in response.headers.items()
-        if key.lower() not in excluded_headers
-    ]
-    return Response(response.content, response.status_code, headers)
-
-
-@app.route("/api/v2/route/help")
-def proxy_request_to_brouter_help_v2():
-    return (
-        "<p>URL parameters:</p>"
-        "<p>start: &lt;float,float&gt;, GPS position, eg. '18.1,53.5'</p>"
-        "<p>finish: &lt;float,float&gt;, GPS position, eg. '18.1,53.5'</p>"
-        "<p>format: &lt;str&gt;, 'gps', 'kml', or 'geojson'; default: 'gpx'</p>"
-        "<p>profile: &lt;str&gt;, 'car-eco' or 'car-fast'; default: 'car-fast'</p>"
-        "<p>variant: &lt;int&gt;, 0-4; default: 0</p>"
-        "</p>"
-        "<p>example: route?start=18.1,53.5&finish=19.1,54.5&profile=car-fast&"
-        "variant=1</p>"
+    rules = sorted(app.url_map.iter_rules(), key=lambda rule: str(rule.rule))
+    endpoints = OrderedDict(
+        ((rule.rule, rule.endpoint) for rule in rules if rule.endpoint != "static")
     )
 
+    static_files = sorted(os.listdir("./static"))
+    for static_file_path in static_files:
+        endpoints[f"/static/{static_file_path}"] = static_file_path
 
-@app.route("/api/v2/route")
-def proxy_request_to_brouter_v2():
-    try:
-        parameters = parse_route_args(request.args)
-    except ValueError as exception:
-        return str(exception), 400
+    return render_template("sitemap.html", endpoints=endpoints)
 
-    base_url = settings.ROUTING_APP_URL
-    url = f"{base_url}?{parameters}"
 
-    response = requests.get(url)
-    excluded_headers = [
-        "content-encoding",
-        "content-length",
-        "transfer-encoding",
-        "connection",
-    ]
-    headers = [
-        (key, value)
-        for (key, value) in response.headers.items()
-        if key.lower() not in excluded_headers
-    ]
+@app.route("/api/v1/route/help")
+def proxy_request_to_brouter_help():
+    return render_template("route_help.html")
 
-    return Response(response.content, response.status_code, headers)
+
+@app.route("/api/v1/route")
+def proxy_request_to_brouter():
+    return get_route(request.args)
 
 
 def get_regions(model):
     db_session = DBSession()
-    return {model.__tablename__: [x.to_dict() for x in db_session.query(model).all()]}
+    regions = db_session.query(model).all()
+    if not regions:
+        raise NoResultFound(f"No rows found in table {model.__tablename__}.")
+    return {model.__tablename__: [r.to_dict() for r in regions]}
 
 
 def get_region(model, region_id):
     db_session = DBSession()
-    region = db_session.query(model).filter_by(id_=region_id).one()
+    try:
+        region = db_session.query(model).filter_by(id_=region_id).one()
+    except NoResultFound:
+        raise NoResultFound(f"{model.__name__} with id='{region_id}' not found")
     return region.to_dict()
 
 
@@ -139,8 +120,8 @@ def get_county(county_id):
 def str_to_date(date_str):
     try:
         dt = date.fromisoformat(date_str)
-    except ValueError:
-        raise WrongDateError
+    except ValueError as e:
+        raise WrongDateError(f"{e}. Please use the proper format: 'YYYY-MM-DD'")
 
     return dt
 
@@ -209,4 +190,7 @@ def get_cases_from_for(date_str, county_id):
 
 
 if __name__ == "__main__":
+    from database import recreate_schema
+
+    recreate_schema()
     app.run(host="0.0.0.0", debug=settings.DEBUG)

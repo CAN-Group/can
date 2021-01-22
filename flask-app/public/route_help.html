@@ -1,0 +1,39 @@
+<html>
+
+<head></head>
+
+<body>
+<pre style="word-wrap: break-word; white-space: pre-wrap;">
+URL parameters:
+    coords:
+        - a list of GPS positions of subsequent points from start to finish
+        - at least two points are required
+        - a point consists of a longitude (float) and a latitude (float) separated by ","
+        - points are separated by "|"
+        - example: coords=1.0,2.0|3.0,4.0|5.0,6.0
+    counties:
+        - an optional list of IDs of counties to avoid
+        - IDs separated by ","
+        - example: counties=t0201,t3203
+    profile:
+        - optional name (string) of a routing profile
+        - see <a href="/static/routing_profiles.json">/static/routing_profiles.json</a> for a list of available profiles
+        - default profile: car-fast
+        - example: profile=car-eco
+    variant
+        - optional route variant (integer)
+        - accepted range: &lt;0,4&gt;
+        - default variant: 0
+        - eg. variant=1
+    format:
+        - optional output path file format (string)
+        - accepted values: gpx, kml, geojson
+        - default format: gpx
+        - example: format=kml
+
+example:
+<a href="/api/v1/route?coords=16.298218,54.239551|17.002716,54.457266&counties=t3213&profile=car-eco">/api/v1/route?coords=16.298218,54.239551|17.002716,54.457266&amp;counties=t3213&amp;profile=car-eco</a>
+</pre>
+</body>
+
+</html>
