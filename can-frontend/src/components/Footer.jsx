@@ -28,6 +28,7 @@ const StyledLink = styled.a`
     width: 450px;
     display: flex;
     align-items: center;
+    color: white;
 `;
 
 const iconStyle = {
@@ -40,9 +41,21 @@ const StyledSpan = styled.span`
     margin-left: 10px;
     font-family: Simonetta;
     font-weight: 900;
-    font-size: 12px;
+    font-size: 17px;
+    
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    a:link {
+        color: #F5F5F5;
+    }
+    a:visited {
+        color: #F5F5F5;
+    }
+    a:hover {
+        transition: font-size 1s;
+        font-size: 22px;
+    }
 `;
+
 function Footer(props) {
     
     return (  
@@ -51,29 +64,30 @@ function Footer(props) {
                 <StyledLinkSection>
                     <StyledLink>
                         <FaEnvelope />
-                        <StyledSpan>Send Us an Email</StyledSpan>
-                    </StyledLink>
-                    <StyledLink>
-                        <FaQuestionCircle />
-                        <StyledSpan>Frequently Asked Questions</StyledSpan>
-                    </StyledLink>
-                    <StyledLink>
-                        <FaPenSquare />
-                        <StyledSpan>Sign Up for the Newsletter</StyledSpan>
-                    </StyledLink>
-                </StyledLinkSection>
-                <StyledLinkSection>
-                    <StyledLink>
-                        <FaTwitter />
-                        <StyledSpan>On Twitter</StyledSpan>
-                    </StyledLink>
-                    <StyledLink>
-                        <FaFacebookSquare />
-                        <StyledSpan>On Facebook</StyledSpan>
+                        <StyledSpan>
+                            <a href="/Contact">Send Us an Email</a>
+                        </StyledSpan>
                     </StyledLink>
                     <StyledLink>
                         <FaLandmark />
-                        <StyledSpan>Visit Official Goverment Site</StyledSpan>
+                        <StyledSpan>
+                            <a href="https://www.gov.pl/web/zdrowie">Visit Official Goverment Site</a>
+                        </StyledSpan>
+                    </StyledLink>
+                </StyledLinkSection>
+
+                <StyledLinkSection>
+                    <StyledLink>
+                        <FaTwitter />
+                        <StyledSpan>
+                            <a href="https://twitter.com">On Twitter</a>
+                        </StyledSpan>
+                    </StyledLink>
+                    <StyledLink>
+                        <FaFacebookSquare />
+                        <StyledSpan>
+                            <a href="https://facebook.com">On Facebook</a>
+                        </StyledSpan>
                     </StyledLink>
                 </StyledLinkSection>
             </IconContext.Provider>

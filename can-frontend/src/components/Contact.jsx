@@ -21,12 +21,16 @@ const StyledMainContent = styled.section`
     flex-flow: column nowrap;
 `;
 
+
 function Contact(props) {
     return (
         <ContentWrapper>
             <StyledMainContent/>
             <StyledInfoContent>
-                If you would to contact us, plese, don'.t
+                Send us mail at:
+                <br/><br/>
+                exampleContactMail@can.com
+                
             </StyledInfoContent>
         </ContentWrapper>
     )
