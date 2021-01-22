@@ -11,7 +11,7 @@ DB_CONNECTION_URI = getenv("DB_CONNECTION_URI", "sqlite:///../dev.db")
 
 MZ_TODAY_URI = getenv(
     "MZ_TODAY_URI",
-    "https://www.gov.pl/web/koronawirus/mapa-zarazen-koronawirusem-sars-cov-2-powiaty",
+    "https://services9.arcgis.com/RykcEgwHWuMsJXPj/arcgis/rest/services/powiaty_corona_widok_woj/FeatureServer/0/query",
 )
 MZ_ARCHIVE_URI = getenv(
     "MZ_ARCHIVE_URI", "https://www.gov.pl/web/koronawirus/pliki-archiwalne-powiaty"
