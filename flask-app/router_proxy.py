@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Type
+from typing import Dict, Iterable, List, Type
 
 import requests
 from flask import Response
@@ -11,6 +11,13 @@ COUNTIES_SHAPES = {}
 
 ROUTING_PROFILES_FILE = "./static/routing_profiles.json"
 VALID_ROUTING_PROFILES = []
+
+
+def parse_polygon(pairs_list):
+    # pairs_list is actually a list containing a list of pairs, so:
+    pairs_list = pairs_list[0]
+    coords_pairs = [f"{pair[0]},{pair[1]}" for pair in pairs_list]
+    return ",".join(coords_pairs)
 
 
 def get_counties_shapes():
@@ -26,20 +33,10 @@ def get_counties_shapes():
             coordinates = feature["geometry"]["coordinates"]
 
             if geometry_type == "Polygon":
-                polygons = [coordinates[0]]
-            else:
-                polygons = [polygon[0] for polygon in coordinates]
-
-            polygons = [
-                [f"{pair[0]},{pair[1]}" for pair in polygon] for polygon in polygons
-            ]
-
-            polygons = [",".join(polygon) for polygon in polygons]
-            # coords_pairs = [
-            #     f"{pair[0]},{pair[1]}" for polygon in polygons for pair in polygon
-            # ]
-
-            COUNTIES_SHAPES[id_] = "|".join(polygons)
+                COUNTIES_SHAPES[id_] = parse_polygon(coordinates)
+            elif geometry_type == "MultiPolygon":
+                polygons = [parse_polygon(coords) for coords in coordinates]
+                COUNTIES_SHAPES[id_] = "|".join(polygons)
 
     return COUNTIES_SHAPES
 
@@ -52,6 +49,10 @@ def get_valid_routing_profiles():
             VALID_ROUTING_PROFILES = json.load(file)
 
     return VALID_ROUTING_PROFILES
+
+
+class BadRequestArgumentException(Exception):
+    pass
 
 
 class Parameter:
@@ -68,32 +69,54 @@ class ParameterList:
     items: List[Parameter]
     input_separator: str
     output_name: str
-    optional: bool = False
 
-    def __init__(self, items: List[Parameter]):
-        # if not all((type(item) == self.parameter_class for item in items)):
-        #     raise ValueError("All items must be objects of given class")
-        self.items = items.copy()
+    def __init__(self, items: Iterable[Parameter]):
+        raise NotImplementedError()
+
+    @classmethod
+    def parse(cls, s: str):
+        raise NotImplementedError()
+
+    def format(self):
+        return f"{self.output_name}=" + "|".join((item.format() for item in self.items))
+
+
+class OptionalParameterList(ParameterList):
+    def __init__(self, items: Iterable[Parameter]):
+        if not items:
+            items = list()
+        self.items = list(items)
 
     @classmethod
     def parse(cls, s: str):
         if not s:
-            if cls.optional:
-                return False
-            else:
-                raise ValueError("Parameter is required")
+            return
 
         items = [item for item in s.split(cls.input_separator) if item]
         if not items:
-            if cls.optional:
-                return False
-            else:
-                raise ValueError("List must not be empty")
+            return
 
         return cls(items=[cls.parameter_class.parse(item) for item in items])
 
-    def format(self):
-        return f"{self.output_name}=" + "|".join((item.format() for item in self.items))
+
+class RequiredParameterList(ParameterList):
+    min_items: int
+
+    def __init__(self, items: List[Parameter]):
+        if not items or len(items) < self.min_items:
+            raise ValueError(f"List must have at least {self.min_items} items")
+        self.items = list(items)
+
+    @classmethod
+    def parse(cls, s: str):
+        if not s:
+            raise ValueError("Parameter is required")
+
+        items = [item for item in s.split(cls.input_separator) if item]
+        if len(items) < cls.min_items:
+            raise ValueError(f"List must have at least {cls.min_items} items")
+
+        return cls(items=[cls.parameter_class.parse(item) for item in items])
 
 
 class Coordinates(Parameter):
@@ -106,8 +129,8 @@ class Coordinates(Parameter):
 
     @classmethod
     def parse(cls, s: str):
-        lon, lat = s.split(",")
         try:
+            lon, lat = s.split(",", 1)
             lon = float(lon)
             lat = float(lat)
         except ValueError:
@@ -119,9 +142,10 @@ class Coordinates(Parameter):
         return f"{self.longitude},{self.latitude}"
 
 
-class RouteCoordinates(ParameterList):
+class RouteCoordinates(RequiredParameterList):
     parameter_class = Coordinates
     input_separator = "|"
+    min_items = 2
     output_name = "lonlats"
 
 
@@ -142,11 +166,10 @@ class County(Parameter):
         return get_counties_shapes()[self.id_]
 
 
-class CountyIDs(ParameterList):
+class CountyIDs(OptionalParameterList):
     parameter_class = County
     input_separator = ","
     output_name = "polygons"
-    optional = True
 
 
 class RouteProfile(Parameter):
@@ -183,7 +206,7 @@ class RouteVariant(Parameter):
         try:
             s = int(s)
         except ValueError:
-            raise ValueError("Route variant must be an integer")
+            raise ValueError("Route variant must be an integer in range <0,4>")
 
         if not 0 <= s <= 4:
             raise ValueError("Route variant must be an integer in range <0,4>")
@@ -236,7 +259,7 @@ def parse_route_args(args):
                 params[parameter] = var.format()
 
     if errors:
-        raise ValueError(errors)
+        raise BadRequestArgumentException(errors)
 
     return "&".join(params.values())
 
@@ -246,8 +269,6 @@ def get_route(args):
 
     base_url = settings.ROUTING_APP_URL
     url = f"{base_url}?{parameters}"
-
-    # return url
 
     response = requests.get(url)
     excluded_headers = [

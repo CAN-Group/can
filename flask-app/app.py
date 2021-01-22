@@ -1,15 +1,15 @@
 import os
+from collections import OrderedDict
 from datetime import date
 
-import requests
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from sqlalchemy.orm.exc import NoResultFound
 
 import settings
 from database import DBSession
 from models import County, Voivodeship
-from router_proxy import get_route
+from router_proxy import BadRequestArgumentException, get_route
 
 app = Flask(__name__, static_folder="./static", template_folder="./public")
 app.config["JSON_AS_ASCII"] = False
@@ -18,34 +18,39 @@ app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 CORS(app, origin={settings.FRONTEND_APP_URL})
 
 
-class BadRequestArgumentException(Exception):
-    pass
-
-
-class WrongDateError(BadRequestArgumentException):
+class WrongDateError(Exception):
     """Raised when date conversion fails"""
 
-    def __init__(self):
-        return super(WrongDateError, self).__init__(
-            "Wrong date provided. Please use the proper format: 'YYYY-MM-DD'"
-        )
+
+if settings.DEBUG:
+
+    @app.errorhandler(Exception)
+    def handle_bad_request(e):
+        return jsonify(error="unexpected error", error_reason=str(e)), 400
 
 
 @app.errorhandler(BadRequestArgumentException)
-def handle_bad_request(e):
-    return jsonify(error=str(e)), 400
+def handle_bad_proxy_request(e):
+    return (
+        jsonify(
+            error="bad route request url parameters",
+            error_reasons=e.args[0],
+        ),
+        400,
+    )
 
 
 @app.errorhandler(NoResultFound)
 def handle_no_data(e):
-    return jsonify(error="No data available"), 400
+    return jsonify(error="no data found", error_reason=str(e)), 400
 
 
 @app.errorhandler(WrongDateError)
 def handle_wrong_date(e):
     return (
         jsonify(
-            error="Wrong date provided. Please use the proper format: 'YYYY-MM-DD'"
+            error="date parsing error",
+            error_reason=str(e),
         ),
         400,
     )
@@ -53,15 +58,16 @@ def handle_wrong_date(e):
 
 @app.route("/")
 def sitemap():
-    endpoints = {
-        rule.rule: rule.endpoint
-        for rule in app.url_map.iter_rules()
-        if rule.endpoint != "static"
-    }
-    static_files = os.listdir("./static")
+    rules = sorted(app.url_map.iter_rules(), key=lambda rule: str(rule.rule))
+    endpoints = OrderedDict(
+        ((rule.rule, rule.endpoint) for rule in rules if rule.endpoint != "static")
+    )
+
+    static_files = sorted(os.listdir("./static"))
     for static_file_path in static_files:
         endpoints[f"/static/{static_file_path}"] = static_file_path
-    return endpoints
+
+    return render_template("sitemap.html", endpoints=endpoints)
 
 
 @app.route("/api/v1/route/help")
@@ -70,21 +76,24 @@ def proxy_request_to_brouter_help():
 
 
 @app.route("/api/v1/route")
-def proxy_request_to_brouter_v1():
-    try:
-        return get_route(request.args)
-    except ValueError as exception:
-        return jsonify(errors=exception.args[0]), 400
+def proxy_request_to_brouter():
+    return get_route(request.args)
 
 
 def get_regions(model):
     db_session = DBSession()
-    return {model.__tablename__: [x.to_dict() for x in db_session.query(model).all()]}
+    regions = db_session.query(model).all()
+    if not regions:
+        raise NoResultFound(f"No rows found in table {model.__tablename__}.")
+    return {model.__tablename__: [r.to_dict() for r in regions]}
 
 
 def get_region(model, region_id):
     db_session = DBSession()
-    region = db_session.query(model).filter_by(id_=region_id).one()
+    try:
+        region = db_session.query(model).filter_by(id_=region_id).one()
+    except NoResultFound:
+        raise NoResultFound(f"{model.__name__} with id='{region_id}' not found")
     return region.to_dict()
 
 
@@ -111,8 +120,8 @@ def get_county(county_id):
 def str_to_date(date_str):
     try:
         dt = date.fromisoformat(date_str)
-    except ValueError:
-        raise WrongDateError
+    except ValueError as e:
+        raise WrongDateError(f"{e}. Please use the proper format: 'YYYY-MM-DD'")
 
     return dt
 
@@ -181,4 +190,7 @@ def get_cases_from_for(date_str, county_id):
 
 
 if __name__ == "__main__":
+    from database import recreate_schema
+
+    recreate_schema()
     app.run(host="0.0.0.0", debug=settings.DEBUG)

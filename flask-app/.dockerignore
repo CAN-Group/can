@@ -1,6 +1,7 @@
 *
 !*.py
 !static/
+!public/
 !Pipfile*
 !run.sh
 
