@@ -1,20 +1,21 @@
-from apscheduler.triggers.cron import CronTrigger
-from database import DBSession
-from bs4 import BeautifulSoup
-import settings
-import requests
-import pandas as pd
-import numpy as np
-from datetime import datetime
-import models
 import json
+from datetime import datetime
 
+import numpy as np
+import pandas as pd
+import requests
+from apscheduler.triggers.cron import CronTrigger
+from bs4 import BeautifulSoup
+
+import models
+import settings
+from database import DBSession
 
 payload = {
-  "f": "json",
-  "where": "1=1",
-  "outFields": "POTWIERDZONE_DZIENNE,JPT_KJ_I_2",
-  "returnGeometry": "false"
+    "f": "json",
+    "where": "1=1",
+    "outFields": "POTWIERDZONE_DZIENNE,JPT_KJ_I_2",
+    "returnGeometry": "false",
 }
 
 
