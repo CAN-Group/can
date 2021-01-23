@@ -4,7 +4,8 @@ import styled from 'styled-components'
 const StyledContentWrapper = styled.section`
     margin: 25px 0;
    
-
+    
+    
     &:first-child {
         margin-top: 0;
     }
