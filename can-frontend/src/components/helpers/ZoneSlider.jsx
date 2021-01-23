@@ -104,27 +104,26 @@ function ZoneSlider(props) {
     const settLeftValue = e => {
         const _this = e.target;
         const range = document.getElementById("range");
-        const inputRight = document.getElementById("inputRight");
         const leftThumb = document.getElementById("leftThumb");
         const min = parseInt(_this.min);
         const max = parseInt(_this.max);
        
-
-
-
         setLeftValue(Math.min(parseInt(_this.value), parseInt(rightValue)));
 
         let percent = ((leftValue - min) / (max - min)) * 100;
-        
-       
+              
         leftThumb.style.left = percent + "%";
         range.style.left = percent + "%";
+    }
+
+    const onThumbMouseUp = e => {
+        const {id, value } = e.target;
+        console.log(id + "->" +  value);
     }
 
     const settRightValue = e => {
         const _this = e.target;
         const range = document.getElementById("range");
-        const inputLeft = document.getElementById("inputLeft");
         const rightThumb = document.getElementById("rightThumb");
         const min = parseInt(_this.min);
         const max = parseInt(_this.max);
@@ -140,15 +139,15 @@ function ZoneSlider(props) {
     return (
      
             <StyledMultiRangeSlider>
-                <StyledInput id="inputLeft"  type="range"  min="0" max="100" value={leftValue}  onInput={settLeftValue} />
-                <StyledInput id="inputRight" type="range"  min="0" max="100" value={rightValue} onInput={settRightValue} />
+                <StyledInput id="inputLeft"  type="range"  min="0" max="100" value={leftValue}  onInput={settLeftValue} onMouseUp={onThumbMouseUp} />
+                <StyledInput id="inputRight" type="range"  min="0" max="100" value={rightValue} onInput={settRightValue} onMouseUp={onThumbMouseUp} />
 
                 <StyledSlider>
                  
                     <StyledRangeLeft style={{right: `${100 - leftValue}%`}} />
                     <StyledRange id="range" />
                     <StyledRangeRight />
-                    <StyledLeft id="leftThumb" style={thumb}/>
+                    <StyledLeft id="leftThumb" style={thumb} />
                     <StyledRight id="rightThumb" style={thumb} />
                 </StyledSlider>
 

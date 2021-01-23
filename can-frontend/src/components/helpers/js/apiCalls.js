@@ -26,18 +26,11 @@ export async function getCases()
 
 export async function getData()
 {
-   
-
     const counties = await getCounties();
     const cases    = await getCases();
 
     const countyInfo = await bindData(counties, cases);
-    
-
-
-
-    //TO jest grubymi nicmi szyte
-  
+    //TO jest grubymi nicmi szyte 
     return await setZoneLevel(countyInfo);
 }
 
@@ -93,4 +86,8 @@ async function setZoneLevel(countyInfo)
     return countyInfo;
 }
 
-
+export async function getProfiles()
+{
+    const response = await fetch(api.staticRes('routing_profiles.json'));
+    return await response.json();
+}

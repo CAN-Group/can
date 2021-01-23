@@ -40,11 +40,17 @@ class LeafletMap extends Component {
     }
 
     componentDidMount() {
-        getData().then(countyInfo => this.setState({countyInfo: countyInfo}));
+        getData().then(countyInfo => {
+            this.setState({countyInfo: countyInfo})
+            this.props.onZoneFetch(countyInfo);
+        });
         getGeoJson().then(geo => this.setState({geoJson: geo}));
     }
 
+    
+
     onEeachCounty = (county, layer) => {
+
 
         const dangerColor =  this.state.countyInfo.get(county.properties.id).danger
         
@@ -111,8 +117,8 @@ class LeafletMap extends Component {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
                 />
                 { geojson }
-                <DraggableMarker type='MarkerA' position={this.props.markerStart}/>
-                <DraggableMarker type='MarkerB' position={this.props.markerStop} />
+                <DraggableMarker type='MarkerA' position={this.props.markerStart} onDragEnd={this.props.onDragEnd} />
+                <DraggableMarker type='MarkerB' position={this.props.markerStop}  onDragEnd={this.props.onDragEnd} />
                 
                 {this.props.children}
 
