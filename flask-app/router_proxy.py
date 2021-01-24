@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Dict, Iterable, List, Type
 
 import requests
@@ -272,6 +273,11 @@ def get_route(args):
 
     base_url = settings.ROUTING_APP_URL
     url = f"{base_url}?{parameters}&polylines={POLAND_OUTLINE_PARAMETER}"
+
+    with open(
+        "logs/" + datetime.now().strftime(r"%Y-%m-%dT%H-%M-%S") + ".req.log", "w"
+    ) as f:
+        f.write(url)
 
     response = requests.get(url)
     excluded_headers = [
