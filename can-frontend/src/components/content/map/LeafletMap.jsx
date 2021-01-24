@@ -42,7 +42,8 @@ class LeafletMap extends Component {
     componentDidMount() {
         getData().then(countyInfo => {
             this.setState({countyInfo: countyInfo})
-            this.props.onZoneFetch(countyInfo);
+            this.props.onZoneFetch(this.state.countyInfo);
+            this.props.onZoneUpdate(this.state.countyInfo)
         });
         getGeoJson().then(geo => this.setState({geoJson: geo}));
     }

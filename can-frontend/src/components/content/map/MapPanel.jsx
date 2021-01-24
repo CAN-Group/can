@@ -181,8 +181,12 @@ export default class Mappanel extends Component {
 
         fetch(url)
         .then(res => res.text())
-        .then(data => this.setState({newGpx: data}));
-        
+        .then(data => {
+            this.setState({newGpx: data});
+            console.log("im done, nibba " + url);
+        });
+
+    
     }
 
     onZoneUpdate = countyInfo => {
@@ -226,7 +230,7 @@ export default class Mappanel extends Component {
                         <SubmitButton handleClick={this.onSubmit}/>
                      
                     </InputMap>
-                    <LeafletMap markerStart={this.state.markerStart} markerStop={this.state.markerStop} onDragEnd={this.onDragEnd} onZoneFetch={this.onZoneUpdate} >
+                    <LeafletMap markerStart={this.state.markerStart} markerStop={this.state.markerStop} onDragEnd={this.onDragEnd} onZoneFetch={this.onZoneUpdate} onZoneUpdate={this.onZoneUpdate} >
                         <MapComponent gpx={this.state.newGpx} />
                     </LeafletMap>
                 
