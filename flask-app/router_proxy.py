@@ -98,7 +98,7 @@ class OptionalParameterList(ParameterList):
 
         items = [item for item in s.split(cls.input_separator) if item]
         if not items:
-            return
+            return cls()
 
         return cls(items=[cls.parameter_class.parse(item) for item in items])
 
@@ -173,7 +173,13 @@ class County(Parameter):
 class CountyIDs(OptionalParameterList):
     parameter_class = County
     input_separator = ","
-    output_name = "polygons"
+    output_name = "polylines"
+
+    def format(self):
+        output = f"{self.output_name}={POLAND_OUTLINE_PARAMETER}"
+        if self.items:
+            output += "|" + "|".join((item.format() for item in self.items))
+        return output
 
 
 class RouteProfile(Parameter):
@@ -272,7 +278,7 @@ def get_route(args):
     parameters = parse_route_args(args)
 
     base_url = settings.ROUTING_APP_URL
-    url = f"{base_url}?{parameters}&polylines={POLAND_OUTLINE_PARAMETER}"
+    url = f"{base_url}?{parameters}"
 
     with open(
         "logs/" + datetime.now().strftime(r"%Y-%m-%dT%H-%M-%S") + ".req.log", "w"
