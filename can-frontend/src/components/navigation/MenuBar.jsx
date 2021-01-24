@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import MenuItem from './MenuItem'
 
@@ -20,7 +21,9 @@ function MenuBar(props)
     return( 
         <StyledMenuBar>
             <StyledMenuList>
-                { menuItems.map( item =>  <MenuItem key={item.toString()} name={item} />) }
+            <NavLink to="/"><MenuItem name='Map'/></NavLink>
+            <NavLink to="/about"><MenuItem name='About Us'/></NavLink>
+            <NavLink to="/contact"><MenuItem name='Contact'/></NavLink>
             </StyledMenuList>
         </StyledMenuBar>
     );

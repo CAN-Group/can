@@ -1,24 +1,24 @@
 import React from 'react'
-import ContentWrapper from './ContentWrapper'
+import ContentWrapper from './content/ContentWrapper'
 import styled from 'styled-components'
 
 
 const StyledInfoContent = styled.section`
-   
+    border: 3px solid yellow;
 
-    background: #2C363C;
-    color: white;
 `;
 
 
-function InfoContent(props) {
+function Contact(props) {
     return (
         <ContentWrapper>
             <StyledInfoContent>
-               
+                <div>
+                There is no such page
+                </div>
             </StyledInfoContent>
         </ContentWrapper>
     )
 }
 
-export default InfoContent;
+export default Contact;
