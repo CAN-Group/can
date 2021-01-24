@@ -14,16 +14,21 @@ const StyledMenuList = styled.ul`
     display: flex;
     width: 450px;
     justify-content: space-between;
+    
 `;
+
+const styleNavLink = {
+    textDecoration: 'none',
+}
 
 function MenuBar(props)
 {
     return( 
         <StyledMenuBar>
             <StyledMenuList>
-            <NavLink to="/"><MenuItem name='Map'/></NavLink>
-            <NavLink to="/about"><MenuItem name='About Us'/></NavLink>
-            <NavLink to="/contact"><MenuItem name='Contact'/></NavLink>
+            <NavLink style={styleNavLink} to="/"><MenuItem name='Map'/></NavLink>
+            <NavLink style={styleNavLink} to="/about"><MenuItem name='About Us'/></NavLink>
+            <NavLink style={styleNavLink} to="/contact"><MenuItem name='Contact'/></NavLink>
             </StyledMenuList>
         </StyledMenuBar>
     );

@@ -11,8 +11,8 @@ const apiConnector = {
         return `http://${this.address}:${this.port}/static/${endpoint}`;
     },
 
-    route: function(coords, counties, routeProfile, variant=1) {
-        const queryString = `?coords=${coords.start[0]},${coords.start[1]}|${coords.end[0]},${coords.end[1]}&counties=${counties.join(',')}&profile=${routeProfile}&variant=${variant}`;
+    route: function(coords, counties, routeProfile) {
+        const queryString = `?coords=${coords.start[0]},${coords.start[1]}|${coords.end[0]},${coords.end[1]}&counties=${counties.join(',')}&profile=${routeProfile}`;
 
         const req = `http://${this.address}:${this.port}/api/${this.version}/route${queryString}`;
         return req;

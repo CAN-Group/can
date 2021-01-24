@@ -12,6 +12,7 @@ const StyledFooter = styled.footer`
     width: 100%;
     bottom: 0;
     position: fixed;
+    z-index: 2000;
 `;
 
 const StyledLinkSection = styled.section`
@@ -20,6 +21,7 @@ const StyledLinkSection = styled.section`
     align-items: center;
     justify-content: center;
     margin: 10px 0;
+
 `;
 
 const StyledLink = styled.a`
@@ -28,32 +30,28 @@ const StyledLink = styled.a`
     width: 450px;
     display: flex;
     align-items: center;
-    color: white;
+    color: #F5F5F5;
+    text-decoration: none;
+    transition: all .1s ease-in-out;
+
+    &:hover {
+        transform: scale(1.1);
+        color: white;
+        border-bottom: 2px solid white;
+    }
+
 `;
 
 const iconStyle = {
-    color: '#F5F5F5',
-    size: '1.4rem'
+    size: '1.4rem',
 };
 
 const StyledSpan = styled.span`
-    color: #F5F5F5;
     margin-left: 10px;
     font-family: Simonetta;
     font-weight: 900;
-    font-size: 17px;
-    
+    font-size: 17px;  
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    a:link {
-        color: #F5F5F5;
-    }
-    a:visited {
-        color: #F5F5F5;
-    }
-    a:hover {
-        transition: font-size 1s;
-        font-size: 22px;
-    }
 `;
 
 function Footer(props) {
@@ -62,32 +60,23 @@ function Footer(props) {
         <StyledFooter>
             <IconContext.Provider value ={iconStyle}>
                 <StyledLinkSection>
-                    <StyledLink>
-                        <FaEnvelope />
-                        <StyledSpan>
-                            <a href="/Contact">Send Us an Email</a>
-                        </StyledSpan>
+                    <StyledLink href="/Contact">
+                        <FaEnvelope  />
+                        <StyledSpan> Send Us an Email </StyledSpan>
                     </StyledLink>
-                    <StyledLink>
+                    <StyledLink href="https://www.gov.pl/web/zdrowie">
                         <FaLandmark />
-                        <StyledSpan>
-                            <a href="https://www.gov.pl/web/zdrowie">Visit Official Goverment Site</a>
-                        </StyledSpan>
+                        <StyledSpan> Visit Official Goverment Site </StyledSpan>
                     </StyledLink>
                 </StyledLinkSection>
-
                 <StyledLinkSection>
-                    <StyledLink>
+                    <StyledLink href="https://twitter.com">
                         <FaTwitter />
-                        <StyledSpan>
-                            <a href="https://twitter.com">On Twitter</a>
-                        </StyledSpan>
+                        <StyledSpan> CAN on Twitter </StyledSpan>
                     </StyledLink>
-                    <StyledLink>
+                    <StyledLink href="https://facebook.com">
                         <FaFacebookSquare />
-                        <StyledSpan>
-                            <a href="https://facebook.com">On Facebook</a>
-                        </StyledSpan>
+                        <StyledSpan> CAN on Facebook </StyledSpan>
                     </StyledLink>
                 </StyledLinkSection>
             </IconContext.Provider>
