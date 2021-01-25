@@ -6,53 +6,19 @@ import requests
 from flask import Response
 
 import settings
-
-COUNTIES_GEOJSON_FILE = "./static/counties.geojson"
-COUNTIES_SHAPES = {}
+from shapes import (
+    COUNTIES_GEOMETRIES,
+    COUNTIES_SHAPES,
+    COUNTRY_GEOMETRY,
+    COUNTRY_SHAPE,
+    is_point_within_shape,
+)
 
 ROUTING_PROFILES_FILE = "./static/routing_profiles.json"
-VALID_ROUTING_PROFILES = []
 
-with open("static/poland.outline", "r") as f:
-    POLAND_OUTLINE_PARAMETER = f.read()
-
-
-def parse_polygon(pairs_list):
-    # pairs_list is actually a list containing a list of pairs, so:
-    pairs_list = pairs_list[0]
-    coords_pairs = [f"{pair[0]},{pair[1]}" for pair in pairs_list]
-    return ",".join(coords_pairs)
-
-
-def get_counties_shapes():
-    global COUNTIES_SHAPES
-
-    if not COUNTIES_SHAPES:
-        with open(COUNTIES_GEOJSON_FILE, "r", encoding="utf-8") as file:
-            geojson = json.load(file)
-
-        for feature in geojson["features"]:
-            id_ = feature["properties"]["id"]
-            geometry_type = feature["geometry"]["type"]
-            coordinates = feature["geometry"]["coordinates"]
-
-            if geometry_type == "Polygon":
-                COUNTIES_SHAPES[id_] = parse_polygon(coordinates)
-            elif geometry_type == "MultiPolygon":
-                polygons = [parse_polygon(coords) for coords in coordinates]
-                COUNTIES_SHAPES[id_] = "|".join(polygons)
-
-    return COUNTIES_SHAPES
-
-
-def get_valid_routing_profiles():
-    global VALID_ROUTING_PROFILES
-
-    if not VALID_ROUTING_PROFILES:
-        with open(ROUTING_PROFILES_FILE, "r") as file:
-            VALID_ROUTING_PROFILES = json.load(file)
-
-    return VALID_ROUTING_PROFILES
+# load a list with names of valid routing profiles
+with open(ROUTING_PROFILES_FILE, "r", encoding="utf-8") as file:
+    VALID_ROUTING_PROFILES = json.load(file)
 
 
 class BadRequestArgumentException(Exception):
@@ -68,7 +34,7 @@ class Parameter:
         raise NotImplementedError()
 
 
-class ParameterList:
+class ParameterList(Parameter):
     parameter_class: Type[Parameter]
     items: List[Parameter]
     input_separator: str
@@ -86,9 +52,7 @@ class ParameterList:
 
 
 class OptionalParameterList(ParameterList):
-    def __init__(self, items: Iterable[Parameter]):
-        if not items:
-            items = list()
+    def __init__(self, items: Iterable[Parameter] = list()):
         self.items = list(items)
 
     @classmethod
@@ -107,7 +71,7 @@ class RequiredParameterList(ParameterList):
     min_items: int
 
     def __init__(self, items: List[Parameter]):
-        if not items or len(items) < self.min_items:
+        if len(items) < self.min_items:
             raise ValueError(f"List must have at least {self.min_items} items")
         self.items = list(items)
 
@@ -139,11 +103,18 @@ class Coordinates(Parameter):
             lat = float(lat)
         except ValueError:
             raise ValueError("Coordinates must use proper format: 'float,float'")
-        else:
-            return cls(longitude=lon, latitude=lat)
+
+        # ensure point is within country
+        if not is_point_within_shape(lon, lat, COUNTRY_GEOMETRY):
+            raise ValueError(f"Coordinates {lon},{lat} are outside of the country")
+
+        return cls(longitude=lon, latitude=lat)
 
     def format(self):
         return f"{self.longitude},{self.latitude}"
+
+    def to_lonlats(self):
+        return self.lon, self.lat
 
 
 class RouteCoordinates(RequiredParameterList):
@@ -161,25 +132,19 @@ class County(Parameter):
 
     @classmethod
     def parse(cls, s: str):
-        if s not in get_counties_shapes().keys():
+        if s not in COUNTIES_SHAPES.keys():
             raise ValueError("Invalid county ID")
 
         return cls(id_=s)
 
     def format(self):
-        return get_counties_shapes()[self.id_]
+        return COUNTIES_SHAPES[self.id_]
 
 
 class CountyIDs(OptionalParameterList):
     parameter_class = County
     input_separator = ","
     output_name = "polylines"
-
-    def format(self):
-        output = f"{self.output_name}={POLAND_OUTLINE_PARAMETER}"
-        if self.items:
-            output += "|" + "|".join((item.format() for item in self.items))
-        return output
 
 
 class RouteProfile(Parameter):
@@ -193,7 +158,7 @@ class RouteProfile(Parameter):
         if not s:
             s = "car-fast"
 
-        if s not in get_valid_routing_profiles():
+        if s not in VALID_ROUTING_PROFILES:
             raise ValueError("Invalid route profile name")
 
         return cls(name=s)
@@ -247,6 +212,13 @@ class OutputFormat(Parameter):
         return f"format={self.name}"
 
 
+def are_coordinates_within_county(coordinates: Coordinates, county: County):
+    return is_point_within_shape(
+        coordinates.longitude, coordinates.latitude, COUNTIES_GEOMETRIES[county.id_]
+    )
+
+
+# input parameter name -> specific Parameter class
 parsers: Dict[str, Parameter] = {
     "coords": RouteCoordinates,
     "counties": CountyIDs,
@@ -257,21 +229,47 @@ parsers: Dict[str, Parameter] = {
 
 
 def parse_route_args(args):
-    errors = {}
-    params: Dict[str, str] = {}
-    for parameter, class_ in parsers.items():
-        try:
-            var = class_.parse(args.get(parameter))
-        except ValueError as exception:
-            errors[parameter] = str(exception)
-        else:
-            if var:
-                params[parameter] = var.format()
+    errors: Dict[str, str] = {}  # input parameter name -> error reason
+    parameters: Dict[str, Parameter] = {}
+    out_parameters: Dict[str, str] = {}
 
+    # try parsing all input parameters
+    for parameter_name, class_ in parsers.items():
+        try:
+            parsed_object = class_.parse(args.get(parameter_name))
+        except ValueError as exception:
+            errors[parameter_name] = str(exception)
+        else:
+            if parsed_object:
+                parameters[parameter_name] = parsed_object
+
+    # exit if found any errors
     if errors:
         raise BadRequestArgumentException(errors)
 
-    return "&".join(params.values())
+    # filter out counties from nogos if any of route points are within them
+    for point in parameters["coords"].items:
+        parameters["counties"].items = [
+            item
+            for item in parameters["counties"].items
+            if not are_coordinates_within_county(point, item)
+        ]
+
+    # format parameters for request to brouter
+    out_parameters = {
+        parameter_name: parsed_param.format()
+        for parameter_name, parsed_param in parameters.items()
+    }
+
+    # append country shape to list of nogo polylines
+    if len(parameters["counties"].items) == 0:
+        # no counties to avoid, pass only country shape to brouter
+        out_parameters["counties"] += COUNTRY_SHAPE
+    else:
+        # at least one county to avoid, add country shape to the list passed to brouter
+        out_parameters["counties"] += "|" + COUNTRY_SHAPE
+
+    return "&".join(out_parameters.values())
 
 
 def get_route(args):
@@ -299,7 +297,3 @@ def get_route(args):
     ]
 
     return Response(response.content, response.status_code, headers)
-
-
-if __name__ == "__main__":
-    print(get_counties_shapes()["t2412"])
