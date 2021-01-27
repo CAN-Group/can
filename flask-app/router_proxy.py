@@ -18,7 +18,7 @@ ROUTING_PROFILES_FILE = "./static/routing_profiles.json"
 
 # load a list with names of valid routing profiles
 with open(ROUTING_PROFILES_FILE, "r", encoding="utf-8") as file:
-    VALID_ROUTING_PROFILES = json.load(file)
+    VALID_ROUTING_PROFILES = json.load(file).keys()
 
 
 class BadRequestArgumentException(Exception):
@@ -156,7 +156,7 @@ class RouteProfile(Parameter):
     @classmethod
     def parse(cls, s: str):
         if not s:
-            s = "car-fast"
+            s = "car-fasteco"
 
         if s not in VALID_ROUTING_PROFILES:
             raise ValueError("Invalid route profile name")
