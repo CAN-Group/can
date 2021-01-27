@@ -2,10 +2,13 @@ FROM python:3.9.0-slim
 
 WORKDIR /app
 
-RUN pip install pipenv
-COPY Pipfile* ./
+RUN pip install pipenv gunicorn
+COPY Pipfile* .
 RUN pipenv install --system --deploy
 
 COPY . .
 
-CMD ./run.sh
+ENV WSGI_IP 0.0.0.0
+ENV WSGI_PORT 8080
+
+CMD gunicorn --bind "$WSGI_IP:$WSGI_PORT" wsgi:app
