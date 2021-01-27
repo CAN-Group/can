@@ -1,4 +1,10 @@
-*
-!*.py
-!static_data/
-!Pipfile*
+# directories and files starting with "." or "_"
+.*
+_*
+
+# .env files
+*.env
+
+# other runtime created files
+*.db
+*.log

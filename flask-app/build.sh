@@ -1,4 +1,4 @@
 #!/bin/bash
 
-VERSION="0.2b"
+VERSION="1.0b"
 ../dockerbuild.sh $VERSION
