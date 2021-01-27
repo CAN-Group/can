@@ -58,7 +58,7 @@ class OptionalParameterList(ParameterList):
     @classmethod
     def parse(cls, s: str):
         if not s:
-            return
+            return cls()
 
         items = [item for item in s.split(cls.input_separator) if item]
         if not items:
