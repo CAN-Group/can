@@ -38,6 +38,8 @@ services:
     volumes:
       - router-segments:/app/segments
     restart: always
+    cpu_count: 4
+    cpu_shares: 2048
 
   database:
     image: postgres:13-alpine
