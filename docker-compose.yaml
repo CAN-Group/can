@@ -36,8 +36,7 @@ services:
       context: brouter
     image: can/brouter:latest
     volumes:
-      - router-profiles:/app/profiles2
-      - router-segments:/app/segments4
+      - router-segments:/app/segments
     restart: always
 
   database:
@@ -50,6 +49,5 @@ services:
     restart: always
 
 volumes:
-  router-profiles:
   router-segments:
   db-data:
