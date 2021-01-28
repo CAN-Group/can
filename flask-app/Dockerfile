@@ -11,4 +11,4 @@ COPY . .
 ENV WSGI_IP 0.0.0.0
 ENV WSGI_PORT 8080
 
-CMD gunicorn --bind "$WSGI_IP:$WSGI_PORT" wsgi:app
+CMD gunicorn --timeout 300 --bind "$WSGI_IP:$WSGI_PORT" wsgi:app
