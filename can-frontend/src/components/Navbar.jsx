@@ -1,7 +1,8 @@
 import React from 'react';
 import Logo from './navigation/Logo';   
 import styled from 'styled-components';
-import MenuBar from './navigation/MenuBar';
+import MenuBar from './navigation/MenuBar'
+
 
 const NavWrapper = styled.nav`
     background-color: #2C363C;
@@ -21,9 +22,9 @@ class NavBar extends React.Component {
     render() {
         return (  
             <NavWrapper >
-                <Logo />
+                <Logo />           
                 <MenuBar />
-            </NavWrapper>
+            </NavWrapper>   
         );
     }
 };  

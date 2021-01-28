@@ -1,27 +1,28 @@
 import React from 'react'
 import styled from 'styled-components';
-import { FaUsers, FaCity, FaCalendarAlt, FaSyringe, FaInfo } from "react-icons/fa";
-
+import { FaReply,  FaLongArrowAltRight, FaRoad} from "react-icons/fa";
+import * as ReactBootStrap from 'react-bootstrap';
 
 const StyledInfoBoxMap = styled.div`
    z-index: 900;
-   width: 200px;
+   width: 240px;
    position: absolute;
    border: 1px solid gray;
-   top: 15px;
-   right: 15px;
+   left: 15px;
+   bottom: 15px;
    background-color: #2C363C;
    border-radius: 10px;
    display: flex;
    flex-flow: column wrap;
-   
+   height: 120px;
    align-content: center;
    justify-content: center;
-   opacity: 0.9;
+   opacity: 0.9; 
 
 `;
 
 const StyledLabel = styled.label`
+    
     display: block;
     width: 20px;
     font-weight: bold;
@@ -30,9 +31,10 @@ const StyledLabel = styled.label`
 
 const StyledSpan = styled.span`
     display: block;
-    width: 100px;
+    width: 130px;
     text-align: left;
     margin-left: 20px;
+    
 `;
 
 const StyledInfoLabel = styled.div`
@@ -42,49 +44,43 @@ const StyledInfoLabel = styled.div`
     color: #F5F5F5;
     align-items: center;
     justify-content: center;
+    position:relative;
 `;
 
 function InfoBoxMap(props) {
-    
     return (
         <StyledInfoBoxMap>
-            <FaInfo style={{
+              <FaRoad style={{
                 color: '#F5F5F5',
                 position: 'absolute',
                 fontSize: '26px',  
-                bottom: '-15px',
-                left: '150px',
+                top: '-15px',
+                left: '8px',
                 backgroundColor: '#2C363C',
                 borderRadius: 30,
                 width: 30,
                 height: 30,
 
             }}/>
+            {  props.loading[1] === true  ? <ReactBootStrap.Spinner animation="border"  variant="light" /> : (
             <StyledInfoLabel>
             
             <StyledLabel>
-                    <FaCity  style={{fontSize: '24px'}}/>
+                    <FaLongArrowAltRight style={{fontSize: '26px', color: 'red',  backgroundColor: '#F5F5F5' , borderRadius: 30, opacity:0.8 }} />
             </StyledLabel> 
-                {props.countyName && <StyledSpan>{props.countyName}</StyledSpan>}
+                  <StyledSpan>Unsafe: {props.distanceRoutes[0]} km</StyledSpan>
             </StyledInfoLabel>
+            )}
+            { props.loading[0] === true ? <ReactBootStrap.Spinner animation="border" variant="light" /> :(
             <StyledInfoLabel>
+              
             <StyledLabel>
-                {props.casesNumber !==0 && <FaSyringe  style={{fontSize: '24px'}}/>}
+                <FaReply style={{fontSize: '26px', color: 'blue',  backgroundColor: '#F5F5F5' , borderRadius: 30, opacity:0.8}} />
             </StyledLabel> 
-                {props.casesNumber !==0 && <StyledSpan>{props.casesNumber}</StyledSpan>}
+                 <StyledSpan>Safe: {props.distanceRoutes[1]} km</StyledSpan>
             </StyledInfoLabel>
-            <StyledInfoLabel>
-                <StyledLabel>
-                    <FaUsers style={{fontSize: '24px'}}/>
-                </StyledLabel> 
-                {props.countyPopulation !== 0 && <StyledSpan>{props.countyPopulation}</StyledSpan> }
-            </StyledInfoLabel>
-            <StyledInfoLabel>
-            <StyledLabel>
-                    <FaCalendarAlt  style={{fontSize: '24px'}}/>
-            </StyledLabel> 
-                {props.caseUpdate && <StyledSpan>{props.caseUpdate}</StyledSpan>}
-            </StyledInfoLabel>
+            )}
+           
        </StyledInfoBoxMap>
     )
 }

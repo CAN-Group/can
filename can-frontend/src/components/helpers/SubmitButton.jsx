@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { FaSearchLocation } from 'react-icons/fa';
+import * as ReactBootStrap from 'react-bootstrap';
 
 const StyledSubmitButton = styled.button`
     display: block;
@@ -41,13 +42,42 @@ const StyledSpan = styled.span`
     `;
 
 function SubmitButton(props) {
+
+
+    const onClickInner = (e) => {
+        if(props.loading[0] || props.loading[1])
+        {
+            e.preventDefault();
+        }
+        else{
+            props.handleClick();
+        }
+       
+    }
     
+    let loading;
+    if(props.loading[0] || props.loading[1])
+    {
+        loading = <><ReactBootStrap.Spinner animation="border"  variant="light" size="sm" /><p>Wait...</p></>
+    }
+    else {
+        loading = (<>
+        <FaSearchLocation style={{fontSize: '18px'}}/>
+           
+        <StyledSpan>
+            Search  
+        </StyledSpan>
+        </>
+        )
+    }
+    
+
     return (
-        <StyledSubmitButton type="submit" onClick={props.handleClick}>
-            <FaSearchLocation style={{fontSize: '18px'}}/>
-            <StyledSpan>
-                Search
-            </StyledSpan>
+        <StyledSubmitButton type="submit" onClick={(e) => onClickInner(e)}>
+            
+          {loading}
+            
+          
         </StyledSubmitButton>
     )
 }

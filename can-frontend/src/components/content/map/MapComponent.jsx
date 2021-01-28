@@ -3,6 +3,8 @@ import L from 'leaflet-gpx';
 
 import React, {useEffect, useState} from 'react';
 
+//DO PRZEROBIENIA
+
 function MapComponent(props) {
     const map = useMap();
     const [layer, setLayer] = useState({});
@@ -20,23 +22,21 @@ function MapComponent(props) {
                 
             },
             polyline_options: {
-                color: 'blue',
+                color: props.pathColor,
                 opacity: 0.6,
                 weight: 2,
                 lineCap: 'round'
               }
-
+        
         }).on('loaded', (e) =>{
+            
             map.fitBounds(e.target.getBounds());
+            props.onDistanceLoaded(e.target.get_distance(), props.pathColor);
         });
         newLayer.addTo(map);
-        
+       
         setLayer(newLayer)
     }, [props.gpx]);
-
-    
-
-    // console.log("loading");
     return null;
 }
 

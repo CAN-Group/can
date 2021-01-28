@@ -25,9 +25,12 @@ const StyledLink = styled.a`
     height: 100%;
     display: flex;
     align-items:center;
+    color: #F5F5F5;
     justify-content: center;
     &:hover {
         transform: scale(1.1);
+        color:white;
+        text-decoration: none;
     }
 `;
 

@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import 'leaflet/dist/leaflet.css'
 import {  getGeoJson , getData } from './../../helpers/js/apiCalls';
 import DraggableMarker from './../../helpers/DraggableMarker';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 const StyledLeafletMap = styled.div`
@@ -32,19 +34,33 @@ class LeafletMap extends Component {
             lat: 52.23,
             lng: 21.01,
             zoom: 6.4,
-            countyInfo: new Map(),
             selectedCountyId: 0,
             geoJson: {},
-            markers: [],
+          
         }
     }
 
+    
+
+    mapContainerStyle = {
+        height: '100%',
+        width: '100%',
+        position: 'relative',
+        zIndex: 0,
+
+    }
+
+    backdropStyle = {
+         position: 'absolute',
+         zIndex: 2,    
+     }
+
     componentDidMount() {
-        getData().then(countyInfo => {
-            this.setState({countyInfo: countyInfo})
-            this.props.onZoneFetch(this.state.countyInfo);
-            this.props.onZoneUpdate(this.state.countyInfo)
-        });
+        // getData().then(countyInfo => {
+        //     this.setState({countyInfo: countyInfo})
+        //     this.props.onZoneFetch(this.state.countyInfo);
+        //     this.props.onZoneUpdate(this.state.countyInfo)
+        // });
         getGeoJson().then(geo => this.setState({geoJson: geo}));
     }
 
@@ -52,12 +68,14 @@ class LeafletMap extends Component {
 
     onEeachCounty = (county, layer) => {
 
+        const { countyInfo } = this.props;
 
-        const dangerColor =  this.state.countyInfo.get(county.properties.id).danger
-        
+        const dangerColor =  countyInfo.get(county.properties.id).danger
+        // const colors = ['red', 'green', 'blue', 'yellow'];
+        // const randomIdx = Math.floor((Math.random() * 4));
+
         layer.options.fillOpacity = this.opacity;
         layer.options.fillColor = dangerColor;
-
 
         layer.on({
             mouseover: e => {
@@ -66,7 +84,7 @@ class LeafletMap extends Component {
                     fillColor: "blue",
                     fillOpacity: this.opacity,
                     weight: 0.5,
-                })
+                });
                 this.setState({selectedCountyId: county.properties.id})
             },
             mouseout: e => {
@@ -75,49 +93,49 @@ class LeafletMap extends Component {
                     color: 'black',
                     fillColor: dangerColor,
                     fillOpacity: this.opacity,  
-                })
+                });
                 this.setState({selectedCountyId: 0});
             },
         });
     }
 
     render() {
-        const position = [this.state.lat, this.state.lng];
+        const {selectedCountyId, geoJson, zoom, lat, lng} = this.state;
+        let infoBox, geojsonComp;
 
-        let infoBox;
-        if(this.state.selectedCountyId !== 0)
+        if(selectedCountyId !== 0)
         {
-            const county = this.state.countyInfo.get(this.state.selectedCountyId);
+            const county = this.props.countyInfo.get(selectedCountyId);
 
             infoBox =  <MapInfoBox countyName={county.name} 
                                    countyPopulation={county.population}
                                    casesNumber={county.casesCount}
-                                   caseUpdate= {county.lastUpdate} 
-                        />               
+                                   caseUpdate= {county.lastUpdate} />               
         }
 
-        let geojson;
-        if(this.state.countyInfo.size !== 0)
+        if(this.props.countyInfo.size !== 0)
         {
-            geojson = <GeoJSON data= {this.state.geoJson.features}
+
+
+            geojsonComp = <GeoJSON key={this.props.renderTrigger}
+                        data= {geoJson.features}
                         onEachFeature={this.onEeachCounty}
-                        style={this.geoJsonStyle}
-                      /> 
+                        style={this.geoJsonStyle}/> 
         }
 
         return (  
-            <StyledLeafletMap>
-                <MapContainer center={position}
-                              zoom={this.state.zoom} 
-                              style={{height:'100%'}}
-                              scrollWheelZoom={true}
-                              >
+            <StyledLeafletMap> 
+                <MapContainer center={[lat, lng]}
+                              zoom={zoom} 
+                              style={this.mapContainerStyle}
+                              scrollWheelZoom={true}>
                                 
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
                 />
-                { geojson }
+
+                {geojsonComp}
                 <DraggableMarker type='MarkerA' position={this.props.markerStart} onDragEnd={this.props.onDragEnd} />
                 <DraggableMarker type='MarkerB' position={this.props.markerStop}  onDragEnd={this.props.onDragEnd} />
                 

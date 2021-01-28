@@ -88,6 +88,30 @@ const StyledInput = styled.input`
     }
 `;
 
+const StyledLabel = styled.label`
+    font-size: 13px;
+`;
+
+const StyledLabelValue = styled.label`
+    border-radius: 20px;
+    padding: 3px;
+    opacity: 0.8;
+    font-weight: 900;
+    font-color: 
+`;
+
+const StyledParams = styled.div`
+    width: 100%;
+    height: 25px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-family: Arial, Helvetica, sens-serif;
+    font-size: 14px;
+`;
+
 const thumb = {
     position: "absolute",
     zIndex: 3,
@@ -98,60 +122,60 @@ const thumb = {
 };
 
 function ZoneSlider(props) {
-    const [leftValue, setLeftValue] = useState(30);
-    const [rightValue, setRightValue] = useState(70);
+    const [leftValue, setLeftValue] = useState(props.zoneThresshold[0]);
+    const [rightValue, setRightValue] = useState(props.zoneThresshold[1]);
 
     const settLeftValue = e => {
         const _this = e.target;
         const range = document.getElementById("range");
         const leftThumb = document.getElementById("leftThumb");
         const min = parseInt(_this.min);
-        const max = parseInt(_this.max);
-       
+        const max = parseInt(_this.max); 
         setLeftValue(Math.min(parseInt(_this.value), parseInt(rightValue)));
-
-        let percent = ((leftValue - min) / (max - min)) * 100;
-              
+        let percent = ((leftValue - min) / (max - min)) * 100;         
         leftThumb.style.left = percent + "%";
         range.style.left = percent + "%";
     }
-
-    const onThumbMouseUp = e => {
-        const {id, value } = e.target;
-        console.log(id + "->" +  value);
-    }
-
     const settRightValue = e => {
         const _this = e.target;
         const range = document.getElementById("range");
         const rightThumb = document.getElementById("rightThumb");
         const min = parseInt(_this.min);
         const max = parseInt(_this.max);
-
         setRightValue(Math.max(parseInt(_this.value), parseInt(leftValue)));
-
-        let percent = ((rightValue - min) / (max - min)) * 100;
-        
+        let percent = ((rightValue - min) / (max - min)) * 100; 
         rightThumb.style.right = (100 - percent) + "%";
         range.style.right = (100 - percent) + "%";
     }
 
     return (
-     
+        <>
             <StyledMultiRangeSlider>
-                <StyledInput id="inputLeft"  type="range"  min="0" max="100" value={leftValue}  onInput={settLeftValue} onMouseUp={onThumbMouseUp} />
-                <StyledInput id="inputRight" type="range"  min="0" max="100" value={rightValue} onInput={settRightValue} onMouseUp={onThumbMouseUp} />
+                <StyledInput id="inputLeft"  type="range"  min="0" max="100" value={leftValue}  onInput={settLeftValue} onMouseUp={props.onThumbMouseUp} />
+                <StyledInput id="inputRight" type="range"  min="0" max="100" value={rightValue} onInput={settRightValue} onMouseUp={props.onThumbMouseUp} />
 
-                <StyledSlider>
-                 
-                    <StyledRangeLeft style={{right: `${100 - leftValue}%`}} />
-                    <StyledRange id="range" />
-                    <StyledRangeRight />
+                 <StyledSlider>    
+                        <StyledRangeLeft style={{right: `${100 - leftValue}%`}} />
+                        <StyledRange id="range" />                    
+                       <StyledRangeRight />
                     <StyledLeft id="leftThumb" style={thumb} />
                     <StyledRight id="rightThumb" style={thumb} />
                 </StyledSlider>
-
+     
+              <h1 style={{fontSize: 16, fontWeight: 'bold', marginTop: 20}}>Poziom Zagrożenia (%): </h1>
+             <StyledParams>     
+                <StyledLabel> 
+                    Niskie:  <StyledLabelValue style={{backgroundColor:'green'}}>{leftValue}</StyledLabelValue>
+                </StyledLabel>
+                <StyledLabel>
+                    Umiarkowane:  <StyledLabelValue style={{backgroundColor:'yellow'}}>{rightValue - leftValue}</StyledLabelValue>
+                </StyledLabel>
+                <StyledLabel>
+                    Wysokie:  <StyledLabelValue style={{backgroundColor:'red'}}>{100 - rightValue}</StyledLabelValue>
+                </StyledLabel> 
+            </StyledParams>
             </StyledMultiRangeSlider>
+        </>
     )
 }
 
