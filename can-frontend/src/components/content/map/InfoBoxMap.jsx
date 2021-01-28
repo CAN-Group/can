@@ -52,7 +52,7 @@ function InfoBoxMap(props) {
                 color: '#F5F5F5',
                 position: 'absolute',
                 fontSize: '26px',  
-                bottom: '-15px',
+                top: '-15px',
                 left: '150px',
                 backgroundColor: '#2C363C',
                 borderRadius: 30,

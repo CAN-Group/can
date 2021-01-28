@@ -163,10 +163,13 @@ export default class Mappanel extends Component {
         const { markerStart, markerStop, selectedProfile, excludeZones } = this.state;
 
 
-        this.setState({loadingRoute: true, loadingNRoute:true});
+        this.setState({loadingRoute: true, 
+                       loadingNRoute:true, 
+                       disances: [0,0]});
+        
 
         const url = api.route({
-            start: [markerStart.lng, markerStart.lat,],
+            start: [markerStart.lng, markerStart.lat],
             end: [markerStop.lng, markerStop.lat ]
         },
         excludeZones,
@@ -181,8 +184,8 @@ export default class Mappanel extends Component {
         });
 
         const urlNoRoute =  api.nonroute({
-            start: [markerStart.lng, markerStart.lat,],
-            end: [markerStop.lng, markerStop.lat ]
+            start: [markerStart.lng, markerStart.lat],
+            end:   [markerStop.lng, markerStop.lat ]
         },
         selectedProfile);
 
@@ -292,5 +295,3 @@ export default class Mappanel extends Component {
     }
 
 }
-
-//this.state.distances.some(num => num !== 0)
