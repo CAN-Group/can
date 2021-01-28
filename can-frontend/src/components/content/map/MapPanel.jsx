@@ -10,7 +10,7 @@ import SubmitButton from '../../helpers/SubmitButton'
 import ZoneSlider from './../../helpers/ZoneSlider'
 import { getProfiles, getData, getGeoJson } from './../../helpers/js/apiCalls'
 import PathBoxMap from './PathBoxMap';
-
+import { FaFlag, FaFlagCheckered, FaCog  } from "react-icons/fa";
 
 //FaDirections 
 
@@ -23,7 +23,18 @@ const StyledMapPanel = styled.div`
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
+    
 `;
+
+const StyledDot = styled.div`;
+    background-color: #2C363C;
+    width: 6px;
+    height: 6px;
+    border-radius: 30px;
+    position: absolute;
+    top: 215px;
+    left: 80px;
+`
 
 
 
@@ -236,6 +247,13 @@ export default class Mappanel extends Component {
         }
     }
 
+    iconStyle = {
+        fontSize: 24,
+        marginRight: 7,
+        color: '#2C363C',
+        marginTop: 13,
+    };
+
     render() {
         const {countyInfo, cityArray, profiles, zoneThresshold, routedGpx, nonRoutedGpx, markerStart, markerStop, renderTrigger} = this.state;
         return (
@@ -243,9 +261,17 @@ export default class Mappanel extends Component {
                 <StyledMapPanel>
                     <InputMap>
                         <ZoneSlider onThumbMouseUp={this.onThumbMouseUp} zoneThresshold={zoneThresshold} />
-                        <AutoTextBox placeholder="Choose starting point..." items = {cityArray} onSelection={this.onSelectedCity} type="MarkerA" />
-                        <AutoTextBox placeholder="Choose destination..." items = {cityArray} onSelection={this.onSelectedCity} type="MarkerB"/>
-                        <AutoTextBox placeholder="Choose routing profile..." items = {profiles} onSelection={this.onSelectedProfile}/>
+                        <AutoTextBox placeholder="Choose starting point..." items = {cityArray} onSelection={this.onSelectedCity} type="MarkerA" >
+                            < FaFlag style={this.iconStyle} />
+                        </AutoTextBox>
+                        <StyledDot />
+                        <StyledDot style={{top: 225}} />
+                        <AutoTextBox placeholder="Choose destination..." items = {cityArray} onSelection={this.onSelectedCity} type="MarkerB">
+                            <FaFlagCheckered style={this.iconStyle} />
+                        </AutoTextBox>
+                        <AutoTextBox placeholder="Choose routing profile..." items = {profiles} onSelection={this.onSelectedProfile}>
+                           < FaCog style={this.iconStyle} />
+                        </AutoTextBox>
                         <SubmitButton handleClick={this.onSubmit} loading={[this.state.loadingRoute,this.state.loadingNRoute]}/>
                     </InputMap>
                    

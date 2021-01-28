@@ -57,6 +57,11 @@ const StyledLi = styled.li`
     }
 `;
 
+const StyledWrapper = styled.div`
+    display: flex ;
+    align-items: center;
+`;
+
 
 class AutoTextbox  extends Component {
     constructor(props) {
@@ -104,13 +109,14 @@ class AutoTextbox  extends Component {
     render() {
         const { text } = this.state;
         return (
-           <>
-           {this.props.children}
+           <StyledWrapper>
+               {this.props.children}
             <StyledAutoComplete>
+              
                 <StyledInput placeholder={this.props.placeholder} value={text} type="text" onChange={this.onTextChanged}/>
                 {this.renderSuggestions()}
             </StyledAutoComplete>
-            </>
+            </StyledWrapper>
         );
     }
 }

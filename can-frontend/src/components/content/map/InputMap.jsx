@@ -18,7 +18,7 @@ const StyledWrap = styled.div`
     align-items: left;
     justify-content: space-around;
     flex-flow: column nowrap;
-    height: 200px;
+    height: 250px;
     margin: 70px;
 `;
 
