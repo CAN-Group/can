@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 
+
 const StyledAutoComplete = styled.div`
     
     border: 1px solid grey;
@@ -30,7 +31,8 @@ const StyledUl = styled.ul`
     border: 1px solid gray;
     position: absolute;
     background-color: white;
-    
+    height: 200px;
+    overflow: scroll;
     width: 100%;
     z-index: 999;
     &:before {
@@ -94,10 +96,13 @@ class AutoTextbox  extends Component {
     render() {
         const { text } = this.state;
         return (
+           <>
+           {this.props.children}
             <StyledAutoComplete>
                 <StyledInput placeholder={this.props.placeholder} value={text} type="text" onChange={this.onTextChanged}/>
                 {this.renderSuggestions()}
             </StyledAutoComplete>
+            </>
         );
     }
 }
