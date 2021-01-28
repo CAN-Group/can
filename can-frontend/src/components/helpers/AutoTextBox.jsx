@@ -24,6 +24,14 @@ const StyledInput = styled.input`
     outline: none;
     height:25px;
     border-radius: 10px;
+    transition: all .1s ease-in-out;
+
+
+    &:hover{
+        background-color: #EEF6FF;
+        color: rgba(0,0,0, 1);
+    }
+
 `;
 
 const StyledUl = styled.ul`
@@ -44,7 +52,7 @@ const StyledLi = styled.li`
     padding: 10px 5px;
     cursor: pointer;
     &:hover{
-       text-decoration:underline;
+       text-decoration: none;
        background-color: #EEF6FF;
     }
 `;

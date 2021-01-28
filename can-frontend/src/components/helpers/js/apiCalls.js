@@ -30,7 +30,6 @@ export async function getData()
     const cases    = await getCases();
 
     const countyInfo = await bindData(counties, cases);
-    //TO jest grubymi nicmi szyte 
     return countyInfo;
 }
 
@@ -51,40 +50,6 @@ async function bindData(counties, cases)
     return countyInfoMap;
 }
 
-// async function setZoneLevel(countyInfo, zoneRange = [30,70])
-// {
-//     let ratioLevel = [];
-
-//     countyInfo.forEach( (value,key) => {
-//         let ratio = parseInt(value.casesCount) / parseInt(value.population) * 1000000; 
-//         ratioLevel.push({key, ratio});
-//     });
-
-//     ratioLevel.sort( (a,b) => a.ratio - b.ratio);
-  
-//     const lowThresshold = Math.floor(0.3 * ratioLevel.length);
-//     const highThresshold = Math.floor(0.7 * ratioLevel.length);
-
-//     let color;
-//     ratioLevel.forEach( (county, index) =>{
-//         if(index <= lowThresshold) {
-//             color = 'green';
-//         }
-//         else if(index >= highThresshold) {
-//             color = 'red';
-//         }
-//         else {
-//             color = 'yellow';
-//         }
-
-//         countyInfo.get(county.key).danger = color;
-
-
-//     })
-
-
-//     return countyInfo;
-// }
 
 export async function getProfiles()
 {

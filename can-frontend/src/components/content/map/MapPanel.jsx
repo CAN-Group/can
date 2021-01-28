@@ -12,6 +12,8 @@ import { getProfiles, getData, getGeoJson } from './../../helpers/js/apiCalls'
 import PathBoxMap from './PathBoxMap';
 
 
+//FaDirections 
+
 import api from './../../helpers/js/connection';
 
 
@@ -179,9 +181,6 @@ export default class Mappanel extends Component {
             this.setState({nonRoutedGpx: data,loadingNRoute: false});
             console.log("success for nonroute!  " +  url);
         });
-
-
-        
     }
 
     onZoneUpdate = countyInfo => {
