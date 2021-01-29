@@ -33,11 +33,12 @@ const StyledLink = styled.a`
     color: #F5F5F5;
     text-decoration: none;
     transition: all .1s ease-in-out;
-
+    
     &:hover {
         transform: scale(1.1);
         color: white;
         border-bottom: 2px solid white;
+        text-decoration: none;
     }
 
 `;
@@ -52,6 +53,7 @@ const StyledSpan = styled.span`
     font-weight: 900;
     font-size: 17px;  
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    text-decoration: none;
 `;
 
 function Footer(props) {
