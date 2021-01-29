@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components';
-import { FaUsers, FaCity, FaCalendarAlt, FaSyringe, FaInfoCircle } from "react-icons/fa";
+import { FaUsers, FaCity, FaCalendarAlt, FaSyringe, FaInfo } from "react-icons/fa";
+
 
 const StyledInfoBoxMap = styled.div`
    z-index: 900;
@@ -16,6 +17,7 @@ const StyledInfoBoxMap = styled.div`
    
    align-content: center;
    justify-content: center;
+   opacity: 0.9;
 
 `;
 
@@ -46,21 +48,25 @@ function InfoBoxMap(props) {
     
     return (
         <StyledInfoBoxMap>
-            <FaInfoCircle style={{
+            <FaInfo style={{
                 color: '#F5F5F5',
                 position: 'absolute',
                 fontSize: '26px',  
-                top: '8px',
-                right: '8px',
+                top: '-15px',
+                left: '150px',
+                backgroundColor: '#2C363C',
+                borderRadius: 30,
+                width: 30,
+                height: 30,
 
             }}/>
             <StyledInfoLabel>
+            
             <StyledLabel>
                     <FaCity  style={{fontSize: '24px'}}/>
             </StyledLabel> 
                 {props.countyName && <StyledSpan>{props.countyName}</StyledSpan>}
             </StyledInfoLabel>
-           
             <StyledInfoLabel>
             <StyledLabel>
                 {props.casesNumber !==0 && <FaSyringe  style={{fontSize: '24px'}}/>}

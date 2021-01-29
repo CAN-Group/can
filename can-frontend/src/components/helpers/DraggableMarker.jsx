@@ -17,10 +17,10 @@ function DraggableMarker(props) {
     const eventHandlers = useMemo(
       () => ({
         dragend() {
-          const marker = markerRef.current
+          const marker = markerRef.current;
           if (marker != null) {
             setPosition(marker.getLatLng())
-            console.log(marker.getLatLng().lng +"    " + marker.getLatLng().lat);
+            props.onDragEnd(marker.getLatLng(), props.type);
           }
         },
       }),

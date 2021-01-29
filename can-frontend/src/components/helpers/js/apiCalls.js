@@ -26,19 +26,11 @@ export async function getCases()
 
 export async function getData()
 {
-   
-
     const counties = await getCounties();
     const cases    = await getCases();
 
     const countyInfo = await bindData(counties, cases);
-    
-
-
-
-    //TO jest grubymi nicmi szyte
-  
-    return await setZoneLevel(countyInfo);
+    return countyInfo;
 }
 
 async function bindData(counties, cases)
@@ -58,39 +50,9 @@ async function bindData(counties, cases)
     return countyInfoMap;
 }
 
-async function setZoneLevel(countyInfo)
+
+export async function getProfiles()
 {
-    let ratioLevel = [];
-
-    countyInfo.forEach( (value,key) => {
-        let ratio = parseInt(value.casesCount) / parseInt(value.population) * 1000000; 
-        ratioLevel.push({key, ratio});
-    });
-
-    ratioLevel.sort( (a,b) => a.ratio - b.ratio);
-  
-    const lowThresshold = Math.floor(0.3 * ratioLevel.length);
-    const highThresshold = Math.floor(0.8 * ratioLevel.length);
-
-    let color;
-    ratioLevel.forEach( (county, index) =>{
-        if(index <= lowThresshold) {
-            color = 'green';
-        }
-        else if(index >= highThresshold) {
-            color = 'red';
-        }
-        else {
-            color = 'yellow';
-        }
-
-        countyInfo.get(county.key).danger = color;
-
-
-    })
-
-
-    return countyInfo;
+    const response = await fetch(api.staticRes('routing_profiles.json'));
+    return await response.json();
 }
-
-

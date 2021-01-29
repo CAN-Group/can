@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import MenuItem from './MenuItem'
 
@@ -13,14 +14,21 @@ const StyledMenuList = styled.ul`
     display: flex;
     width: 450px;
     justify-content: space-between;
+    
 `;
+
+const styleNavLink = {
+    textDecoration: 'none',
+}
 
 function MenuBar(props)
 {
     return( 
         <StyledMenuBar>
             <StyledMenuList>
-                { menuItems.map( item =>  <MenuItem key={item.toString()} name={item} />) }
+            <NavLink style={styleNavLink} to="/"><MenuItem name='Map'/></NavLink>
+            <NavLink style={styleNavLink} to="/about"><MenuItem name='About Us'/></NavLink>
+            <NavLink style={styleNavLink} to="/contact"><MenuItem name='Contact'/></NavLink>
             </StyledMenuList>
         </StyledMenuBar>
     );

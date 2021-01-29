@@ -1,3 +1,32 @@
 body {
     background-color: #E9E9E9;
 }
+
+input[type=range] {
+    -webkit-appearance: none;
+    z-index: 2;
+    position: absolute;
+    pointer-events: none;
+    height: 10px;
+    width: 100%;
+    opacity: 0;
+}
+
+
+input[type=range]::-webkit-slider-thumb {
+    pointer-events: all;
+    width: 30px;
+    height: 30px;
+    border-radius: 0;
+    border: 0 none;
+    background-color: red;
+    -webkit-appearance: none;
+}
+
+input:checked + .sliderr::before {
+    transform: translateX(26px);
+}
+
+input:checked + .sliderr {
+    background-color: #219621;
+}

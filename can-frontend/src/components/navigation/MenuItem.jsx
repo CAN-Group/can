@@ -8,29 +8,40 @@ const StyledMenuItem = styled.li`
     color: #B9C3C5;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     width: 140px;
-    height: 50px;
+    height: 40px;
 
     &:hover {
-        background-color: #1084C3;
+        border-bottom: 2px solid  #1084C3;   
         color: white;
-        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-        border-radius: 59px;
     }
-
     display: flex;
     justify-content: center;
     align-items: center;
+`;
+
+const StyledLink = styled.a`
+    transition: all .1s ;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items:center;
+    color: #F5F5F5;
+    justify-content: center;
+    &:hover {
+        transform: scale(1.1);
+        color:white;
+        text-decoration: none;
+    }
 `;
 
 
 
 class MenuItem extends React.Component
 {
-    
     render() {
         return (
         <StyledMenuItem onClick={this.props.onClick} >
-            <a>{this.props.name}</a>
+            <StyledLink>{this.props.name}</StyledLink>
         </StyledMenuItem>
         );
     }

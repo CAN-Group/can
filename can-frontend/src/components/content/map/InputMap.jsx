@@ -1,36 +1,40 @@
-import React, { Component } from 'react'
-import styled from 'styled-components'
+import React, { Component } from "react";
+import styled from "styled-components";
 
 const StyledInputMap = styled.div`
-    flex: 1;
-    margin-right: 60px;
+  flex: 1;
+  margin-right: 60px;
+  background-color: #f8f8f8;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 33px;
+  height: 400px;
+  margin-top: 100px;
+  position: relative;
+`;
 
-    background-color: #F8F8F8;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 33px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-flow: column nowrap;
-    position: relative;
+const StyledWrap = styled.div`
+  display: flex;
+  align-items: left;
+  justify-content: space-around;
+  flex-flow: column nowrap;
+  height: 250px;
+  margin: 70px;
 `;
 
 class InputMap extends Component {
-    constructor(props) {
-        super(props)
+  constructor(props) {
+    super(props);
 
-        this.state = {
-                 
-        }
-    }
+    this.state = {};
+  }
 
-    render() {
-        return (
-            <StyledInputMap>
-                {this.props.children}
-            </StyledInputMap>
-        )
-    }
+  render() {
+    return (
+      <StyledInputMap>
+        <StyledWrap>{this.props.children}</StyledWrap>
+      </StyledInputMap>
+    );
+  }
 }
 
 export default InputMap;
