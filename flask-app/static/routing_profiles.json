@@ -1,6 +1,20 @@
 {
-    "car-eco": "Economy",
-    "car-fast": "Fast",
-    "car-fasteco": "Balanced",
-    "car-short": "Short"
+    "Profiles" : [
+        { 
+            "key": "car-eco", 
+            "name" : "Economy"
+        },
+        { 
+            "key": "car-fast", 
+            "name" : "Fast"
+        },
+        { 
+            "key": "car-fasteco", 
+            "name" : "Balanced"
+        },
+        { 
+            "key": "car-short", 
+            "name" : "Short"
+        }
+    ]
 }
