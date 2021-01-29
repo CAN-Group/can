@@ -162,16 +162,16 @@ function ZoneSlider(props) {
                     <StyledRight id="rightThumb" style={thumb} />
                 </StyledSlider>
      
-              <h1 style={{fontSize: 16, fontWeight: 'bold', marginTop: 20}}>Poziom Zagrożenia (%): </h1>
+              <h1 style={{fontSize: 16, fontWeight: 'bold', marginTop: 20}}>Threat Level (%): </h1>
              <StyledParams>     
                 <StyledLabel> 
-                    Niskie:  <StyledLabelValue style={{backgroundColor:'green'}}>{leftValue}</StyledLabelValue>
+                    Low:  <StyledLabelValue style={{backgroundColor:'green'}}>{leftValue}</StyledLabelValue>
                 </StyledLabel>
                 <StyledLabel>
-                    Umiarkowane:  <StyledLabelValue style={{backgroundColor:'yellow'}}>{rightValue - leftValue}</StyledLabelValue>
+                    Moderate:  <StyledLabelValue style={{backgroundColor:'yellow'}}>{rightValue - leftValue}</StyledLabelValue>
                 </StyledLabel>
                 <StyledLabel>
-                    Wysokie:  <StyledLabelValue style={{backgroundColor:'red'}}>{100 - rightValue}</StyledLabelValue>
+                    High:  <StyledLabelValue style={{backgroundColor:'red'}}>{100 - rightValue}</StyledLabelValue>
                 </StyledLabel> 
             </StyledParams>
             </StyledMultiRangeSlider>

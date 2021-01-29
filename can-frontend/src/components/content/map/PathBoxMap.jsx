@@ -62,22 +62,22 @@ function InfoBoxMap(props) {
                 height: 30,
 
             }}/>
-            {  props.loading[1] === true  ? <ReactBootStrap.Spinner animation="border"  variant="light" /> : (
+            {  props.loading[1] === true  ? <ReactBootStrap.Spinner animation="border"  variant="light"  /> : (
             <StyledInfoLabel>
             
             <StyledLabel>
                     <FaLongArrowAltRight style={{fontSize: '26px', color: 'red',  backgroundColor: '#F5F5F5' , borderRadius: 30, opacity:0.8 }} />
             </StyledLabel> 
-                  <StyledSpan>Unsafe: {props.distanceRoutes[0]} km</StyledSpan>
+                  <StyledSpan>Unsafe: {props.error[0] ? <p style = {{color:'red'}}>{props.error[0]}</p> : props.distanceRoutes[0] + " km" } </StyledSpan>
             </StyledInfoLabel>
             )}
-            { props.loading[0] === true ? <ReactBootStrap.Spinner animation="border" variant="light" /> :(
+            { props.loading[0] === true ? <ReactBootStrap.Spinner animation="border" variant="light"  /> :(
+                
             <StyledInfoLabel>
-              
             <StyledLabel>
-                <FaReply style={{fontSize: '26px', color: 'blue',  backgroundColor: '#F5F5F5' , borderRadius: 30, opacity:0.8}} />
+                <FaLongArrowAltRight style={{fontSize: '26px', color: 'blue',  backgroundColor: '#F5F5F5' , borderRadius: 30, opacity:0.8}} />
             </StyledLabel> 
-                 <StyledSpan>Safe: {props.distanceRoutes[1]} km</StyledSpan>
+                 <StyledSpan>Safe: {props.error[1] ?  <p style = {{color:'red'}}>{props.error[1]}</p> : props.distanceRoutes[1] + " km"}</StyledSpan>
             </StyledInfoLabel>
             )}
            

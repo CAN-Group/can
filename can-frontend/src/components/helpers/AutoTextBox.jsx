@@ -59,7 +59,7 @@ const StyledLi = styled.li`
 
 const StyledWrapper = styled.div`
     display: flex ;
-    align-items: center;
+    align-items: center;  
 `;
 
 
