@@ -18,7 +18,7 @@ ROUTING_PROFILES_FILE = "./static/routing_profiles.json"
 
 # load a list with names of valid routing profiles
 with open(ROUTING_PROFILES_FILE, "r", encoding="utf-8") as file:
-    VALID_ROUTING_PROFILES = json.load(file).keys()
+    VALID_ROUTING_PROFILES = [obj["key"] for obj in json.load(file)["Profiles"]]
 
 
 class BadRequestArgumentException(Exception):
