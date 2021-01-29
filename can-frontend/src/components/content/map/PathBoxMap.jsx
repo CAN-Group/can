@@ -85,7 +85,7 @@ function InfoBoxMap(props) {
           </StyledSpan>
         </StyledInfoLabel>
       )}
-      {props.loading[0] === true ? (
+      { props.loading[0] === true ? (
         <ReactBootStrap.Spinner animation="border" variant="light" />
       ) : (
         <StyledInfoLabel>

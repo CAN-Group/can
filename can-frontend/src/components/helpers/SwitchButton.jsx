@@ -6,7 +6,8 @@ const StyledSwitch = styled.label`
         display: inline-block;
         width: 60px;
         height: 32px;
-    
+        position: absolute;
+        bottom: 30px;
     & input {
         opacity: 0;
         width: 0;
@@ -52,9 +53,10 @@ const StyledInput = styled.input`
 const SwitchButton = (props) => {
     return (
         <StyledSwitch>
+                
                 <StyledInput type="checkbox" checked={props.isToggled} onChange={props.onToggle}/>
                 <StyledSlider className="sliderr" />
-        </StyledSwitch>
+        </StyledSwitch>    
     )
 }
 

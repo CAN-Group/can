@@ -11,6 +11,8 @@ import ZoneSlider from './../../helpers/ZoneSlider'
 import { getProfiles, getData, getGeoJson } from './../../helpers/js/apiCalls'
 import PathBoxMap from './PathBoxMap';
 import { FaFlag, FaFlagCheckered, FaCog  } from "react-icons/fa";
+import SwitchButton from './../../helpers/SwitchButton';
+
 
 //FaDirections 
 
@@ -65,6 +67,7 @@ export default class Mappanel extends Component {
       errorRoute: "",
       errorNRoute: "",
       profilesName: [],
+      safeRouteEnabled: true,
     };
   }
 
@@ -189,6 +192,7 @@ export default class Mappanel extends Component {
       errorNRoute: "",
     });
 
+    if(this.state.safeRouteEnabled){
     const urlNoRoute = api.nonroute(
       {
         start: [markerStart.lng, markerStart.lat],
@@ -196,6 +200,7 @@ export default class Mappanel extends Component {
       },
       selectedProfile
     );
+
 
     fetch(urlNoRoute)
       .then((res) => {
@@ -217,6 +222,7 @@ export default class Mappanel extends Component {
       }).finally(()=>{
         this.setState({loadingNRoute: false});
       });
+    }
 
     const url = api.route(
       {
@@ -292,6 +298,12 @@ export default class Mappanel extends Component {
     }
   };
 
+  onChangeSwitch = e => {
+      const prev = this.state.safeRouteEnabled;
+      this.setState({safeRouteEnabled: !prev});
+  }
+
+
   iconStyle = {
     fontSize: 24,
     marginRight: 7,
@@ -344,6 +356,7 @@ export default class Mappanel extends Component {
             >
               <FaCog style={this.iconStyle} />
             </AutoTextBox>
+        
             <SubmitButton
               handleClick={this.onSubmit}
               loading={[this.state.loadingRoute, this.state.loadingNRoute]}
@@ -375,7 +388,7 @@ export default class Mappanel extends Component {
               <PathBoxMap
                 distanceRoutes={this.state.distances}
                 loading={[this.state.loadingRoute, this.state.loadingNRoute]}
-                error={[this.state.errorRoute,this.state.errorNRoute]}
+                error={[this.state.errorNRoute,this.state.errorRoute]}
               />
             )}
           </LeafletMap>
