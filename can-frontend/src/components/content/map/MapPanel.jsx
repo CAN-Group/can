@@ -374,12 +374,14 @@ export default class Mappanel extends Component {
               gpx={routedGpx}
               pathColor="blue"
               onDistanceLoaded={this.onDistanceLoaded}
+              newRoute={this.state.loadingRoute}
             />
             {this.state.showNoRoute && (
               <MapComponent
                 gpx={nonRoutedGpx}
                 pathColor="red"
                 onDistanceLoaded={this.onDistanceLoaded}
+                newRoute={this.state.loadingNRoute}
               />
             )}
             {(this.state.loadingRoute ||

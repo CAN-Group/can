@@ -9,6 +9,7 @@ function MapComponent(props) {
   const map = useMap();
   const [layer, setLayer] = useState({});
   useEffect(() => {
+
     map.removeLayer(layer);
     const newLayer = new L.GPX(props.gpx, {
       async: true,
@@ -34,6 +35,14 @@ function MapComponent(props) {
 
     setLayer(newLayer);
   }, [props.gpx]);
+
+  useEffect(() => {
+    if(props.newRoute)
+    {
+      map.removeLayer(layer);
+    }
+  },[props.newRoute])
+
   return null;
 }
 
