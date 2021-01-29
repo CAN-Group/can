@@ -64,6 +64,7 @@ export default class Mappanel extends Component {
       loadingNRoute: false,
       errorRoute: "",
       errorNRoute: "",
+      profilesName: [],
     };
   }
 
@@ -83,7 +84,17 @@ export default class Mappanel extends Component {
       this.setState({ countyInfo: countyTemp });
     });
     getGeoJson().then((geo) => this.setState({ geoJson: geo }));
-    getProfiles().then((profiles) => this.setState({ profiles: profiles }));
+    getProfiles().then((profiles) => {
+
+       const temp = [];
+       this.setState({ profiles: profiles });
+       
+       profiles.Profiles.forEach(prof => {
+        temp.push(prof.name);
+       })
+       this.setState({profilesName: temp});
+
+    });
 
     const cityArray = [];
     const citiesCollection = cities.map(({ city, lat, lng }) => ({
@@ -154,7 +165,12 @@ export default class Mappanel extends Component {
   };
 
   onSelectedProfile = (value, type) => {
-    this.setState({ selectedProfile: value });
+    this.state.profiles.Profiles.forEach( prof => {
+      if(value === prof.name)
+      {
+        this.setState({ selectedProfile: prof.key});    
+      }
+    });
   };
 
   onSubmit = (e) => {
@@ -323,7 +339,7 @@ export default class Mappanel extends Component {
             </AutoTextBox>
             <AutoTextBox
               placeholder="Choose routing profile..."
-              items={profiles}
+              items={this.state.profilesName}
               onSelection={this.onSelectedProfile}
             >
               <FaCog style={this.iconStyle} />

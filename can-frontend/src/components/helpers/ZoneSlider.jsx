@@ -67,12 +67,12 @@ const StyledRangeLeft = styled.div`
 
 const StyledLeft = styled.div`
     left: 30%;
-    transform: translate(-15px, -5px);
+    transform: translate(-10px, -5px);
 `;
 
 const StyledRight = styled.div`
     right: 30%;
-    transform: translate(15px, -5px);
+    transform: translate(10px, -5px);
 `;
 
 const StyledInput = styled.input`
@@ -135,6 +135,7 @@ function ZoneSlider(props) {
         let percent = ((leftValue - min) / (max - min)) * 100;         
         leftThumb.style.left = percent + "%";
         range.style.left = percent + "%";
+        props.onThumbMouseUp(e);
     }
     const settRightValue = e => {
         const _this = e.target;
@@ -146,6 +147,7 @@ function ZoneSlider(props) {
         let percent = ((rightValue - min) / (max - min)) * 100; 
         rightThumb.style.right = (100 - percent) + "%";
         range.style.right = (100 - percent) + "%";
+        props.onThumbMouseUp(e);
     }
 
     return (
