@@ -15,6 +15,7 @@ services:
     environment:
       - REACT_APP_BACKEND_ADDRESS=$ADDRESS
       - REACT_APP_BACKEND_PORT=$BACKEND_PORT
+
   scraper:
     build:
       context: scraper
