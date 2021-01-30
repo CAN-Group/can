@@ -1,6 +1,6 @@
 const apiConnector = {
-    address: '127.0.0.1',
-    port: 5001,
+    address: process.env.REACT_APP_BACKEND_ADDRESS || '127.0.0.1',
+    port: process.env.REACT_APP_BACKEND_PORT || 5000,
     version: 'v1',
     
     endpoint: function(endpoint = '/') {
