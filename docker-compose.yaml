@@ -13,8 +13,8 @@ services:
     links:
       - "backend"
     environment:
-      - REACT_APP_BACKEND_ADDRESS=$ADDRESS
-      - REACT_APP_BACKEND_PORT=$BACKEND_PORT
+      REACT_APP_BACKEND_ADDRESS: ${APP_DOMAIN}
+      REACT_APP_BACKEND_PORT: 5000
 
   scraper:
     build:
