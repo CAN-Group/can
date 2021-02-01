@@ -86,8 +86,8 @@ docker exec -it can_router_1 /bin/sh -c "chmod +x /app/get_segments.sh && /app/g
 7. Starting the services
 
     - brouter:
-      - on Unix systems: execute `brouter/misc/scripts/server.sh`
-      - on Windows: execute `brouter/misc/scripts/server.cmd'
+      - on Unix systems: execute `brouter/misc/scripts/standalone/server.sh`
+      - on Windows: execute `brouter/misc/scripts/standalone/server.cmd`
     - scraper:
       - with pip: `python scraper/main.py`
       - with pipenv: `pipenv run py main.py` while in `scraper` directory
