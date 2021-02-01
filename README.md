@@ -66,7 +66,7 @@ docker exec -it can_router_1 /bin/sh -c "chmod +x /app/get_segments.sh && /app/g
 2. Download the required map segments for brouter app:
 
   - on Unix systems: execute `brouter/misc/scripts/get_segments.sh`
-  - on Windows 10: execute `brouter/misc/scripts/get_segments.cmd`
+  - on Windows 10: cd into `brouter/misc/scripts/` and execute `get_segments.cmd`
   - on older Windows releases: follow instructions in [this document](https://github.com/CAN-Group/can/blob/master/docs/segments.md) and place the files in `brouter/misc/segments4`
 
 3. For backend and scraper you can either install required packages globally on your system or use a virtual environment of your choice. We advise using [pipenv](https://pypi.org/project/pipenv/)
