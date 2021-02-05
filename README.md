@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/can-frontend/public/images/logo.png" width="210" height="68">
+  <img src="/can-frontend/public/images/logo_with_shadow.png" width="210" height="68">
 </p>
 
 <p align="center">
