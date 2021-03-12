@@ -8,6 +8,7 @@ black = "*"
 flake8 = "*"
 isort = "*"
 pytest = "*"
+typer = "*"
 
 [packages]
 flask = "*"
